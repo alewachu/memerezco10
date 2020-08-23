@@ -1,13 +1,13 @@
-import React, { useEffect, useState } from 'react';
-import { enquireScreen } from 'enquire-js'
-import { Layout } from 'antd';
-import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { enquireScreen } from "enquire-js";
+import { Layout } from "antd";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 // Menu top
-import MenuTop from './components/MenuTop/MenuTop';
+import MenuTop from "./components/MenuTop/MenuTop";
 
 // Pages
-import Home from './Pages/Home';
-import Error404 from './Pages/Error404';
+import Home from "./Pages/Home";
+import Error404 from "./Pages/Error404";
 
 function App() {
   const { Header, Content } = Layout;
@@ -15,13 +15,13 @@ function App() {
 
   useEffect(() => {
     enquireScreen((mobile) => {
-      if (isMobile !== mobile){
-        mobile = ( mobile === undefined) ? false : true;
+      if (isMobile !== mobile) {
+        mobile = mobile === undefined ? false : true;
         setStateIsMobile(mobile);
       }
     });
-  })
- 
+  });
+
   return (
     <Layout>
       <Router>
@@ -31,8 +31,8 @@ function App() {
         <Content>
           <Switch>
             <Route path="/" exact={true}>
-            {isMobile && <label>Mobile</label>}
-          {!isMobile && <label>Desckopt</label>}
+              {isMobile && <label>Mobile</label>}
+              {!isMobile && <label>Descktop</label>}
               <Home />
             </Route>
             <Route path="*" exact={true}>
