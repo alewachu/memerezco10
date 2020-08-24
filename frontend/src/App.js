@@ -11,7 +11,7 @@ import Error404 from "./Pages/Error404";
 
 function App() {
   const { Header, Content } = Layout;
-  const [isMobile, setStateIsMobile] = useState();
+  const [isMobile, setStateIsMobile] = useState(false);
 
   useEffect(() => {
     enquireScreen((mobile) => {
