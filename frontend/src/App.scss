@@ -36,3 +36,16 @@
     transform: rotate(360deg);
   }
 }
+
+.menu-bottom-color {
+  background-color: #001529 !important;
+  position: fixed;
+  bottom: 0px;
+  width: 100%;
+  padding: 10px 0px 10px 0px !important;
+}
+
+.site-layout-content {
+  margin-left: 25px !important;
+  margin-right: 25px !important;
+}
