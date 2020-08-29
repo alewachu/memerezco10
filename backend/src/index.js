@@ -38,7 +38,7 @@ app.post('/api/login', (req, res) => {
 });
 
 app.get('/api/protected', ensureToken, (req, res) => {
-  jwt.verify(req.token, 'my_secret_key', (err, data) => {
+  jwt.verify(req.token, process.env.JWT_SECRET_KEY, (err, data) => {
     if (err) {
       res.sendStatus(403);
     } else {
