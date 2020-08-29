@@ -1,20 +1,19 @@
-const mongoose = require("mongoose");
-const { mongo } = require("mongoose");
-const uri = 'mongodb://localhost:27017/memerezco10';
+const mongoose = require('mongoose');
 
-mongoose.connect(uri,{
-    useNewUrlParser:true,
+mongoose
+  .connect(process.env.DB_MONGO_CONN, {
+    useNewUrlParser: true,
     useUnifiedTopology: true,
-    useCreateIndex:true
-})
-.catch(err=> console.log(err))
+    useCreateIndex: true,
+  })
+  .catch((err) => console.log(err));
 
 //cuando se inicia la coneccion
-mongoose.connection.on('open',_ =>{  
- console.log('database is conected to',uri );
-})
+mongoose.connection.on('open', (_) => {
+  console.log('database is conected to', uri);
+});
 
 //db,once solo una sola vez
-mongoose.connection.on('err',err=>{  
-    console.log(err);
-   })
+mongoose.connection.on('err', (err) => {
+  console.log(err);
+});
