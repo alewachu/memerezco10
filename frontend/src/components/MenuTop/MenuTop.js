@@ -1,41 +1,78 @@
-import React from "react";
+import React, { useState } from "react";
 import "./MenuTop.scss";
-import { Menu } from "antd";
-
+import { Menu, Button } from "antd";
 import { Link } from "react-router-dom";
-//import {
-//  MenuUnfoldOutlined,
-//  MenuFoldOutlined,
-//} from '@ant-design/icons';
-export default function MenuTop(props) {
-  //const [collapsed, setCollapsed] = useState(false);
-  const { isMobile } = props;
-  //const toggleCollapsed = () => {
-  //  setCollapsed(!collapsed)
-  // }
+import { MenuOutlined } from "@ant-design/icons";
+import { Drawer, List } from "antd-mobile";
+import { item } from "../../helpers/item.menu";
 
-  console.log(isMobile);
+export default function MenuTop(props) {
+  const { isMobile } = props;
+  const [docker, setDocker] = useState(false);
+
+  const onDock = () => {
+    setDocker(!docker);
+  };
+
+  const sidebar = (
+    <List>
+      {item.map((item) => {
+        return (
+          <List.Item key={item.key}>
+            <Link to={item.to}>{item.name}</Link>
+          </List.Item>
+        );
+      })}
+    </List>
+  );
+
   return (
     <div className="menu-top">
       <div className="menu-top-logo">Logo</div>
-      <Menu
-        theme="dark"
-        mode={isMobile ? "inline" : "horizontal"}
-        style={{ lineHeight: "64px" }}
-      >
-        <Menu.Item key="1">
-          <Link to="/">Home</Link>
-        </Menu.Item>
-        <Menu.Item key="2">
-          <Link to="/">About</Link>
-        </Menu.Item>
-        <Menu.Item key="3">
-          <Link to="/">Logout</Link>
-        </Menu.Item>
-        <Menu.Item key="4">
-          <Link to="/">Login</Link>
-        </Menu.Item>
-      </Menu>
+      {isMobile && (
+        <div>
+          <Drawer
+            className="my-drawer"
+            contentStyle={{
+              color: "#A6A6A6",
+              textAlign: "center",
+            }}
+            sidebarStyle={{
+              border: "1px solid #ddd",
+              width: "70%",
+              backgroundColor: "#ffffff",
+            }}
+            sidebar={sidebar}
+            docked={docker}
+            children={
+              <Button
+                style={{
+                  zIndex: "100",
+                  width: "64px",
+                  height: "64px",
+                  float: "left",
+                }}
+                onClick={() => onDock()}
+              >
+                <MenuOutlined />
+              </Button>
+            }
+          ></Drawer>
+        </div>
+      )}
+
+      {!isMobile && (
+        <Menu theme="dark" mode={isMobile ? "inline" : "horizontal"}>
+          {item.map((item) => {
+            return (
+              <Menu.Item key={item.key}>
+                <Link to={item.to}>{item.name}</Link>
+              </Menu.Item>
+            );
+          })}
+        </Menu>
+      )}
     </div>
   );
 }
+//      <Menu theme="dark" mode={isMobile ? "inline" : "horizontal"}>

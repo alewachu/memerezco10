@@ -2,16 +2,18 @@ import React, { useEffect, useState } from "react";
 import { enquireScreen } from "enquire-js";
 import { Layout } from "antd";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import "./App.scss";
 // Menu top
 import MenuTop from "./components/MenuTop/MenuTop";
-
+// Menu bottom
+import MenuBottom from "./components/MenuBottom/MenuBottom";
 // Pages
 import Home from "./Pages/Home";
 import Error404 from "./Pages/Error404";
 
 function App() {
-  const { Header, Content } = Layout;
-  const [isMobile, setStateIsMobile] = useState();
+  const { Header, Content, Footer } = Layout;
+  const [isMobile, setStateIsMobile] = useState(false);
 
   useEffect(() => {
     enquireScreen((mobile) => {
@@ -28,18 +30,21 @@ function App() {
         <Header>
           <MenuTop isMobile={isMobile} />
         </Header>
-        <Content>
+        <Content className="site-layout-content">
           <Switch>
             <Route path="/" exact={true}>
-              {isMobile && <label>Mobile</label>}
-              {!isMobile && <label>Descktop</label>}
-              <Home />
+              <Home className="content" />
             </Route>
             <Route path="*" exact={true}>
               <Error404 />
             </Route>
           </Switch>
         </Content>
+        {isMobile && (
+          <Footer className="menu-bottom-color">
+            <MenuBottom />
+          </Footer>
+        )}
       </Router>
     </Layout>
   );
