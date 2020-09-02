@@ -8,13 +8,13 @@ import {
   UserOutlined,
 } from "@ant-design/icons";
 
-export default function CardMeme() {
+export default function CardMeme(prop) {
   return (
     <Card
       className="card-meme"
       title={
         <Comment
-          author={"Han Solo"}
+          author={"Han Solo" + prop.prop}
           avatar={<Avatar size="large" icon={<UserOutlined />} />}
         />
       }
