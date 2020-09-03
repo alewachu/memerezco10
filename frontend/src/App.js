@@ -14,6 +14,7 @@ import Home from "./Pages/Home";
 import Error404 from "./Pages/Error404";
 import DetailMeme from "./Pages/DetailMeme";
 import Register from "./Pages/Register";
+import Upload from "./Pages/Upload";
 
 export default function App() {
   const { Header, Content, Footer } = Layout;
@@ -69,6 +70,17 @@ export default function App() {
           ) : (
             <DeauthenticatedUser login={login} register={register} />
           )}
+          <Switch>
+            <Route path="/" exact={true}>
+              <Home className="content" isMobile={isMobile} />
+            </Route>
+            <Route path="/Upload" exact={true}>
+              <Upload className="content" />
+            </Route>
+            <Route path="*" exact={true}>
+              <Error404 />
+            </Route>
+          </Switch>
         </Content>
         {isMobile && (
           <Footer className="menu-bottom-color">
