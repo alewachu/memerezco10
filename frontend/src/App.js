@@ -11,6 +11,8 @@ import MenuBottom from "./components/MenuBottom/MenuBottom";
 import Home from "./Pages/Home";
 import Error404 from "./Pages/Error404";
 
+import Upload from "./Pages/Upload";
+
 function App() {
   const { Header, Content, Footer } = Layout;
   const [isMobile, setStateIsMobile] = useState(false);
@@ -34,6 +36,9 @@ function App() {
           <Switch>
             <Route path="/" exact={true}>
               <Home className="content" isMobile={isMobile} />
+            </Route>
+            <Route path="/Upload" exact={true}>
+              <Upload className="content" />
             </Route>
             <Route path="*" exact={true}>
               <Error404 />
