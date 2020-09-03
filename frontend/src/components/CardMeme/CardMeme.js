@@ -6,36 +6,46 @@ import {
   UpCircleOutlined,
   MessageOutlined,
   UserOutlined,
+  UpCircleTwoTone,
+  DownCircleTwoTone,
 } from "@ant-design/icons";
 
-export default function CardMeme(prop) {
+export default function CardMeme(props) {
+  const {
+    user,
+    category,
+    title,
+    image,
+    upvotes,
+    downvotes,
+    comments,
+    vote,
+  } = props.prop;
+  console.log(user);
   return (
     <Card
       className="card-meme"
       title={
         <Comment
-          author={"Han Solo" + prop.prop}
+          author={user.name}
           avatar={<Avatar size="large" icon={<UserOutlined />} />}
         />
       }
-      extra={<h2>Titulo del meme</h2>}
-      style={{ width: "100%" }}
-      cover={
-        <img
-          alt="example"
-          src="https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png"
-        />
-      }
+      extra={<h2>{title}</h2>}
+      style={{ width: "100%", height: "60%" }}
+      cover={<img alt="example" src={image} />}
       actions={[
         <>
-          <UpCircleOutlined key="upCircle" />
-          15156516
+          {vote === 1 && <UpCircleTwoTone key="upCircle" />}
+          {vote !== 1 && <UpCircleOutlined key="upCircle" />}
+          {upvotes}
         </>,
         <>
-          <DownCircleOutlined key="downCircle" />
-          545
+          {vote === 0 && <DownCircleTwoTone key="upCircle" />}
+          {vote !== 0 && <DownCircleOutlined key="upCircle" />}
+          {downvotes}
         </>,
-        "Categoria",
+        category.name,
         <MessageOutlined key="message" />,
       ]}
     ></Card>

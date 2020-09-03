@@ -33,7 +33,7 @@ function App() {
         <Content className="site-layout-content">
           <Switch>
             <Route path="/" exact={true}>
-              <Home className="content" />
+              <Home className="content" isMobile={isMobile} />
             </Route>
             <Route path="*" exact={true}>
               <Error404 />

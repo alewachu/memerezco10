@@ -44,22 +44,38 @@
   width: 100%;
   padding: 10px 0px 10px 0px !important;
 }
-
+/*
 .site-layout-content {
   margin-left: 25px !important;
   margin-right: 25px !important;
 }
-
+*/
 .demo-infinite-container {
+  z-index: 2;
+
   border: 1px solid #e8e8e8;
   border-radius: 4px;
   overflow: auto;
-  padding: 8px 24px;
-  height: 80%;
+  height: 90vh;
+  width: 100%;
 }
 .demo-loading-container {
   position: absolute;
   bottom: 40px;
   width: 100%;
   text-align: center;
+}
+
+.ranking-col {
+  position: fixed;
+  right: 0px;
+  width: 20%;
+  height: 90vh;
+}
+.ranking-meme {
+  padding-right: 10%;
+}
+
+.col-memes {
+  display: flex;
 }

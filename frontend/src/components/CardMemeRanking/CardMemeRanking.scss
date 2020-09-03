@@ -1,0 +1,18 @@
+.card-meme-ranking {
+  margin-bottom: 10px !important;
+  margin-top: 10px !important;
+  .ant-card-head {
+    height: 10px;
+    width: auto;
+  }
+  .ant-card-body {
+    display: none;
+  }
+  .ant-card-actions li span {
+    display: flex;
+  }
+  .ant-card-actions li span span {
+    width: 20px;
+    margin-left: 33%;
+  }
+}

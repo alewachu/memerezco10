@@ -1,10 +1,128 @@
 import React, { useState, useEffect } from "react";
 import CardMeme from "../components/CardMeme/CardMeme";
+import CardMemeRanking from "../components/CardMemeRanking/CardMemeRanking";
 import { List, Spin } from "antd";
 import InfiniteScroll from "react-infinite-scroller";
 import "../App.scss";
-export default function Home() {
-  // const item = [1, 2, 3, 4, 5];
+
+const memes = [
+  {
+    _id: "dlqwmk21klmdlwkdwlq1234",
+    user: {
+      _id: "dlqwmk21klmdlwkdwlq123",
+      name: "Juan Román Riquelme",
+    },
+    category: {
+      _id: "dlqwmk21klmdlwkdwlq",
+      name: "Soccer",
+      slug: "/soccer",
+    },
+    title: "El oso polar",
+    image:
+      "https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png",
+    upvotes: 1024,
+    downvotes: 512,
+    comments: 256,
+    vote: 1, // null/0/1
+  },
+  {
+    _id: "dlqwmk21klmdlwkdwlq1234",
+    user: {
+      _id: "dlqwmk21klmdlwkdwlq123",
+      name: "Juan Román Riquelme",
+    },
+    category: {
+      _id: "dlqwmk21klmdlwkdwlq",
+      name: "Soccer",
+      slug: "/soccer",
+    },
+    title: "El oso polar",
+    image:
+      "https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png",
+    upvotes: 1024,
+    downvotes: 512,
+    comments: 256,
+    vote: 0, // null/0/1
+  },
+  {
+    _id: "dlqwmk21klmdlwkdwlq1234",
+    user: {
+      _id: "dlqwmk21klmdlwkdwlq123",
+      name: "Juan Román Riquelme",
+    },
+    category: {
+      _id: "dlqwmk21klmdlwkdwlq",
+      name: "Soccer",
+      slug: "/soccer",
+    },
+    title: "El oso polar",
+    image:
+      "https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png",
+    upvotes: 1024,
+    downvotes: 512,
+    comments: 256,
+    vote: 1, // null/0/1
+  },
+  {
+    _id: "dlqwmk21klmdlwkdwlq1234",
+    user: {
+      _id: "dlqwmk21klmdlwkdwlq123",
+      name: "Juan Román Riquelme",
+    },
+    category: {
+      _id: "dlqwmk21klmdlwkdwlq",
+      name: "Soccer",
+      slug: "/soccer",
+    },
+    title: "El oso polar",
+    image:
+      "https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png",
+    upvotes: 1024,
+    downvotes: 512,
+    comments: 256,
+    vote: 1, // null/0/1
+  },
+  {
+    _id: "dlqwmk21klmdlwkdwlq1234",
+    user: {
+      _id: "dlqwmk21klmdlwkdwlq123",
+      name: "Juan Román Riquelme",
+    },
+    category: {
+      _id: "dlqwmk21klmdlwkdwlq",
+      name: "Soccer",
+      slug: "/soccer",
+    },
+    title: "El oso polar",
+    image:
+      "https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png",
+    upvotes: 1024,
+    downvotes: 512,
+    comments: 256,
+    vote: 1, // null/0/1
+  },
+  {
+    _id: "dlqwmk21klmdlwkdwlq1234",
+    user: {
+      _id: "dlqwmk21klmdlwkdwlq123",
+      name: "Juan Román Riquelme",
+    },
+    category: {
+      _id: "dlqwmk21klmdlwkdwlq",
+      name: "Soccer",
+      slug: "/soccer",
+    },
+    title: "El oso polar",
+    image:
+      "https://gw.alipayobjects.com/zos/rmsportal/JiqGstEfoWAOHiTxclqi.png",
+    upvotes: 1024,
+    downvotes: 512,
+    comments: 256,
+    vote: 1, // null/0/1
+  },
+];
+export default function Home(props) {
+  const { isMobile } = props;
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -17,7 +135,7 @@ export default function Home() {
   }, [data]);
 
   const fetchData = () => {
-    let array = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10];
+    let array = memes;
     return array;
   };
 
@@ -36,32 +154,49 @@ export default function Home() {
       setLoading(false);
     }, 3000);
   };
-
+  const styleCard = !isMobile
+    ? { paddingLeft: "20%", paddingRight: "20%" }
+    : {};
   return (
-    <div className="demo-infinite-container">
-      <InfiniteScroll
-        initialLoad={false}
-        hasMore={!loading && hasMore}
-        loadMore={handleInfiniteOnLoad}
-        pageStart={0}
-        useWindow={false}
-        threshold={20}
-      >
-        <List
-          dataSource={data}
-          renderItem={(item) => (
-            <List.Item key={item.id}>
-              <CardMeme key={item} prop={item} />
-            </List.Item>
-          )}
+    <div className="col-memes">
+      <div className="demo-infinite-container">
+        <InfiniteScroll
+          initialLoad={false}
+          hasMore={!loading && hasMore}
+          loadMore={handleInfiniteOnLoad}
+          pageStart={0}
+          useWindow={false}
+          threshold={200}
         >
-          {loading && hasMore && (
-            <div className="demo-loading-container">
-              <Spin />
-            </div>
-          )}
-        </List>
-      </InfiniteScroll>
+          <List
+            dataSource={data}
+            renderItem={(item, index) => (
+              <List.Item key={index} style={styleCard}>
+                <CardMeme key={index} prop={item} />
+              </List.Item>
+            )}
+          >
+            {loading && hasMore && (
+              <div className="demo-loading-container">
+                <Spin />
+              </div>
+            )}
+          </List>
+        </InfiniteScroll>
+      </div>
+      {!isMobile && (
+        <div className="ranking-col">
+          <div className="ranking-meme">
+            <CardMemeRanking key={1} />
+          </div>
+          <div className="ranking-meme">
+            <CardMemeRanking key={2} />
+          </div>
+          <div className="ranking-meme">
+            <CardMemeRanking key={3} />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
