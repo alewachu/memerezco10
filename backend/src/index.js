@@ -1,6 +1,8 @@
 import express from 'express';
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 require('./connection');
 const app = express();
 // Cuando salga a produccion, setear la primer variable que va a leer las claves de otro script
@@ -31,8 +33,8 @@ app.listen(process.env.PORT_BACKEND, () => {
 });
 
 app.post('/api/v1/login', (req, res) => {
-  if (req.query && req.query.mail && req.query.password) {
-    User.findOne({ mail: req.query.mail }, (err, user) => {
+  if (req.body && req.body.mail && req.body.password) {
+    User.findOne({ mail: req.body.mail }, (err, user) => {
       if (err) {
         return res.status(500).json({
           success: false,
@@ -60,7 +62,7 @@ app.post('/api/v1/login', (req, res) => {
         });
       }
 
-      if (!bcrypt.compareSync(req.query.password, user.password)) {
+      if (!bcrypt.compareSync(req.body.password, user.password)) {
         return res.status(400).json({
           ok: false,
           err: {
@@ -80,7 +82,7 @@ app.post('/api/v1/login', (req, res) => {
 
       res.json({
         success: true,
-        name: user.name,
+        user: { name: user.name, mail: user.mail, _id: user._id },
         token,
       });
     });
@@ -96,7 +98,7 @@ app.post('/api/v1/login', (req, res) => {
 });
 
 app.post('/api/v1/register', function (req, res) {
-  const body = req.query;
+  const body = req.body;
   let query = {};
   if (body.name) {
     query['name'] = body.name;
