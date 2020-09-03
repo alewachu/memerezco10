@@ -1,10 +1,12 @@
 import express from 'express';
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
+const cors=require("cors");
 require('./connection');
 const app = express();
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(cors());
 // Cuando salga a produccion, setear la primer variable que va a leer las claves de otro script
 // Por ahora lee de development
 const NODE_ENV = process.env.NODE_ENV || 'development';
@@ -32,7 +34,7 @@ app.listen(process.env.PORT_BACKEND, () => {
   console.log(`Server en port ${process.env.PORT_BACKEND}`);
 });
 
-app.post('/api/v1/login', (req, res) => {
+app.post('/api/v1/login',cors(),(req, res) => {
   if (req.body && req.body.mail && req.body.password) {
     User.findOne({ mail: req.body.mail }, (err, user) => {
       if (err) {
