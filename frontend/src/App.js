@@ -36,10 +36,10 @@ export default function App() {
 
   async function login(email, password) {
     const data = {
-      email: email,
+      mail: email,
       password: password,
     };
-    fetch("https://api.mocki.io/v1/a25c65a9", {
+    fetch("http://localhost:3001/api/v1/login", {
       method: "POST",
       body: JSON.stringify(data),
     })
@@ -55,9 +55,7 @@ export default function App() {
         console.log(e);
       });
   }
-  async function register(){
-    
-  }
+  async function register() {}
   return (
     <Layout>
       <Router>
@@ -106,7 +104,7 @@ function RoutedAuthenticatedUser({ isMobile }) {
   );
 }
 //Rutas usuario deslogueado
-function DeauthenticatedUser({ login,register }) {
+function DeauthenticatedUser({ login, register }) {
   console.log("here");
   return (
     <Switch>

@@ -12,6 +12,7 @@ export default function Home(props) {
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [skip, setSkip] = useState(5);
+  const [memeRanking, setMemeRanking] = useState([]);
 
   useEffect(() => {
     async function fetchMemes() {
@@ -19,10 +20,24 @@ export default function Home(props) {
       setData([...memes, ...data]);
       setSkip(skip + 5);
     }
+    async function rankingMeme() {
+      let ranking = await fetchDataRankingPositives();
+      setMemeRanking([...ranking, ...memeRanking]);
+    }
     if (data.length < 5) {
       fetchMemes();
     }
+    if (memeRanking.length < 3) {
+      rankingMeme();
+    }
   });
+
+  const fetchDataRankingPositives = async () => {
+    const response = await Axios.get(
+      `http://localhost:3001/api/v1/memes?sort=upvotes&limit=3`
+    );
+    return response.data.data;
+  };
 
   const fetchData = async () => {
     const response = await Axios.get(
@@ -57,8 +72,9 @@ export default function Home(props) {
           positive: tipo,
         },
         headers: {
-          Authorization:
-            "Authorization : Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNTAyZTlhZDZkYWMzMGY5MDAyZjFmOSIsIm5hbWUiOiJQcnVlYmE2NzY3IiwibWFpbCI6Im1haWwiLCJpYXQiOjE1OTkwOTAzNDQsImV4cCI6MTU5OTM0OTU0NH0.sj9ssTi1oaPnfzQPm_5vYUkhVGkKNcEuPu_NWXhTDvo",
+          "Content-Type": "application/json",
+          authorization:
+            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNTAyZTlhZDZkYWMzMGY5MDAyZjFmOSIsIm5hbWUiOiJQcnVlYmE2NzY3IiwibWFpbCI6Im1haWwiLCJpYXQiOjE1OTkwOTAzNDQsImV4cCI6MTU5OTM0OTU0NH0.sj9ssTi1oaPnfzQPm_5vYUkhVGkKNcEuPu_NWXhTDvo",
         },
       });
 
@@ -100,15 +116,13 @@ export default function Home(props) {
       </div>
       {!isMobile && (
         <div className="ranking-col">
-          <div className="ranking-meme">
-            <CardMemeRanking key={1} />
-          </div>
-          <div className="ranking-meme">
-            <CardMemeRanking key={2} />
-          </div>
-          <div className="ranking-meme">
-            <CardMemeRanking key={3} />
-          </div>
+          {memeRanking.map((item, index) => {
+            return (
+              <div className="ranking-meme">
+                <CardMemeRanking key={item} prop={item} />
+              </div>
+            );
+          })}
         </div>
       )}
     </div>

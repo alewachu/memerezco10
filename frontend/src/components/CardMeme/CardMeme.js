@@ -23,7 +23,7 @@ export default function CardMeme(props) {
     _id,
   } = props.prop;
   const voteMeme = props.voteMeme;
-
+  console.log("acaaaaaaa", vote);
   return (
     <>
       <Card
