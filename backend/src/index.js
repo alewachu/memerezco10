@@ -1,7 +1,7 @@
 import express from 'express';
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcrypt');
-const cors=require("cors");
+const cors = require('cors');
 require('./connection');
 const app = express();
 app.use(express.urlencoded({ extended: true }));
@@ -34,7 +34,7 @@ app.listen(process.env.PORT_BACKEND, () => {
   console.log(`Server en port ${process.env.PORT_BACKEND}`);
 });
 
-app.post('/api/v1/login',cors(),(req, res) => {
+app.post('/api/v1/login', cors(), (req, res) => {
   if (req.body && req.body.mail && req.body.password) {
     User.findOne({ mail: req.body.mail }, (err, user) => {
       if (err) {
@@ -45,7 +45,7 @@ app.post('/api/v1/login',cors(),(req, res) => {
       }
 
       if (!user) {
-        return res.status(400).json({
+        return res.status(200).json({
           ok: false,
           err: {
             success: false,
@@ -55,7 +55,7 @@ app.post('/api/v1/login',cors(),(req, res) => {
       }
 
       if (user.deletedAt) {
-        return res.status(400).json({
+        return res.status(200).json({
           ok: false,
           err: {
             success: false,
@@ -65,7 +65,7 @@ app.post('/api/v1/login',cors(),(req, res) => {
       }
 
       if (!bcrypt.compareSync(req.body.password, user.password)) {
-        return res.status(400).json({
+        return res.status(200).json({
           ok: false,
           err: {
             success: false,
@@ -89,7 +89,7 @@ app.post('/api/v1/login',cors(),(req, res) => {
       });
     });
   } else {
-    return res.status(400).json({
+    return res.status(200).json({
       ok: false,
       err: {
         success: false,
