@@ -2,6 +2,8 @@ import express from 'express';
 import { getDateTimeFullBD, ensureToken, getUserByToken } from '../helpers.js';
 import Meme from '../models/Meme';
 import Vote from '../models/Vote';
+import Comment from '../models/Comment';
+
 const router = express.Router();
 
 router.get('/', async function (req, res) {
@@ -67,8 +69,14 @@ router.get('/', async function (req, res) {
         for (let i = 0; i < memes.length; i++) {
           const meme = memes[i];
           await Vote.find(
-            { 'meme._id': meme._id, 'user._id': '5f4aaf4eb168d861769a24b8' },
+            { 'meme._id': meme._id, 'user._id': user._id },
             async (err, data) => {
+              if (err) {
+                return res.status(500).json({
+                  success: false,
+                  message: 'Error 500',
+                });
+              }
               // cambiar por _id hardcodeado
               if (data && data.length > 0) {
                 if (typeof data[0].positive !== 'undefined') {
@@ -83,6 +91,7 @@ router.get('/', async function (req, res) {
           );
         }
       }
+
       res.status(200).json({
         success: true,
         data: memes,
@@ -94,12 +103,33 @@ router.get('/', async function (req, res) {
 router.get('/:id', async function (req, res) {
   // Try y catch ya que si no encuentra el documento, da error y entra al catch
   try {
-    await Meme.findById({ _id: req.params.id }, (err, data) => {
+    await Meme.findById({ _id: req.params.id }, async (err, data) => {
+      if (err) {
+        return res.status(500).json({
+          success: false,
+          message: 'Error 500',
+        });
+      }
       if (data) {
         if (!data.deletedAt) {
+          const meme = JSON.parse(JSON.stringify(data));
+          await Comment.find(
+            { 'meme._id': meme._id },
+            async (err, comments) => {
+              if (err) {
+                return res.status(500).json({
+                  success: false,
+                  message: 'Error 500',
+                });
+              }
+              if (comments && comments.length > 0) {
+                meme.allComments = comments;
+              }
+            }
+          );
           return res.status(200).json({
             success: true,
-            data,
+            data: meme,
           });
         } else {
           return res.status(404).json({

@@ -4,6 +4,7 @@ import Vote from '../models/Vote';
 import Meme from '../models/Meme';
 
 const router = express.Router();
+const cors = require('cors');
 
 router.get('/', async function (req, res) {
   const body = req.query;
@@ -105,8 +106,8 @@ router.delete('/:id', ensureToken, async function (req, res) {
   }
 });
 
-router.post('/', ensureToken, async function (req, res) {
-  const body = req.query;
+router.post('/', ensureToken, cors(), async function (req, res) {
+  const body = req.body;
   let query = {};
   if (body.positive) {
     query['positive'] = body.positive;
