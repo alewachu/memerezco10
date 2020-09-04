@@ -1,12 +1,8 @@
-import React, { useState } from "react";
-import { Form, Input, Button, Checkbox, Row, Col, Layout, Menu } from "antd";
-import {
-  UploadOutlined,
-  UserOutlined,
-  VideoCameraOutlined,
-} from "@ant-design/icons";
+import React from "react";
+import { Form, Input, Button, Checkbox, Row, Col, Layout } from "antd";
+
 export default function Login({ login, history }) {
-  const { Header, Content, Footer, Sider } = Layout;
+  const { Content, Footer } = Layout;
   //const [email, setEmail] = useState('');
 
   const onFinish = async (values) => {

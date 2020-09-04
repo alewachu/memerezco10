@@ -10,7 +10,7 @@ import {
   UpCircleTwoTone,
   DownCircleTwoTone,
 } from "@ant-design/icons";
-import CreateComment from "../CreateComment/CreateComment";
+
 export default function CardMeme(props) {
   const {
     user,
@@ -19,15 +19,10 @@ export default function CardMeme(props) {
     image,
     upvotes,
     downvotes,
-    comments,
     vote,
+    _id,
   } = props.prop;
-
-  function onSubmitComment(mensaje){
-    //await createComment(meme,mensaje)
-
-  }
-
+  const voteMeme = props.voteMeme;
 
   return (
     <>
@@ -37,7 +32,6 @@ export default function CardMeme(props) {
           <Comment
             author={user.name}
             avatar={<Avatar size="large" icon={<UserOutlined />} />}
-            
           />
         }
         extra={<h2>{title}</h2>}
@@ -45,23 +39,39 @@ export default function CardMeme(props) {
         cover={<img alt="example" src={image} />}
         actions={[
           <>
-            {vote === 1 && <UpCircleTwoTone key="upCircle" />}
-            {vote !== 1 && <UpCircleOutlined key="upCircle" />}
+            {vote === 1 && (
+              <UpCircleTwoTone
+                key="upCircle"
+                onClick={() => voteMeme(true, 1, _id)}
+              />
+            )}
+            {vote !== 1 && (
+              <UpCircleOutlined
+                key="upCircle"
+                onClick={() => voteMeme(false, 1, _id)}
+              />
+            )}
             {upvotes}
           </>,
           <>
-            {vote === 0 && <DownCircleTwoTone key="upCircle" />}
-            {vote !== 0 && <DownCircleOutlined key="upCircle" />}
+            {vote === 0 && (
+              <DownCircleTwoTone
+                key="upCircle"
+                onClick={() => voteMeme(true, 0, _id)}
+              />
+            )}
+            {vote !== 0 && (
+              <DownCircleOutlined
+                key="upCircle"
+                onClick={() => voteMeme(false, 0, _id)}
+              />
+            )}
             {downvotes}
           </>,
           category.name,
           <MessageOutlined key="message" />,
         ]}
-      >
-       
-      </Card>
-     
-      
+      ></Card>
     </>
   );
 }
