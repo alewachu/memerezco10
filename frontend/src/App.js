@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import { enquireScreen } from "enquire-js";
 import { Layout } from "antd";
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Route, Switch,useHistory } from "react-router-dom";
 import { setToken, getToken } from "./helpers/authentication";
 import "./App.scss";
+import Axios from "axios";
 // Menu top
 import MenuTop from "./components/MenuTop/MenuTop";
 // Menu bottom
 import MenuBottom from "./components/MenuBottom/MenuBottom";
+import MessageError from "./components/MessageError";
 // Pages
 import Login from "./Pages/Login";
 import Home from "./Pages/Home";
@@ -20,6 +22,9 @@ export default function App() {
   const { Header, Content, Footer } = Layout;
   const [isMobile, setStateIsMobile] = useState(false);
   const [userAuth, setUserAuth] = useState(false);
+  const [user, setUser] = useState(null);
+  const [error,setError] = useState(null);
+  let history = useHistory();
 
   useEffect(() => {
     if (getToken()) {
@@ -39,34 +44,51 @@ export default function App() {
       mail: email,
       password: password,
     };
-    fetch("http://localhost:3001/api/v1/login", {
-      method: "POST",
-      body: JSON.stringify(data),
-    })
-      .then((response) => {
-        return response.json();
-      })
-      .then((data) => {
-        setUserAuth(true);
-        //Se guarda en localStorage
-        setToken(data.token);
+ 
+    Axios.post("http://localhost:3001/api/v1/login", data)
+      .then((resp) => {
+        
+        if (resp.data.success) {
+          setUserAuth(true);
+          //Se guarda en sessionStorage
+          setToken(resp.data.token);
+          setUser(resp.data.user);
+          setError(null);
+          //history.push("/");
+          
+          
+        }
       })
       .catch((e) => {
-        console.log(e);
+        
+        setError("las credenciales son incorrectas,intente nuevamente");
       });
   }
-  async function register() {}
+  async function register(user) {
+    const { data } = await Axios.post("/api/v1/users", user);
+    setUser(data.usuario);
+    setToken(data.token);
+  }
+  function showError(message){
+    setError(message);
+
+  }
+
+  function hiddenError(){
+    setUser(null);
+  }
   return (
     <Layout>
       <Router>
         <Header>
           <MenuTop isMobile={isMobile} />
         </Header>
+        <MessageError message={error}></MessageError>
         <Content className="site-layout-content">
           {userAuth ? (
             <RoutedAuthenticatedUser isMobile={isMobile} />
           ) : (
-            <DeauthenticatedUser login={login} register={register} />
+            <DeauthenticatedUser login={login} register={register} showError={showError} />
           )}
           <Switch>
             <Route path="/" exact={true}>
@@ -104,18 +126,18 @@ function RoutedAuthenticatedUser({ isMobile }) {
   );
 }
 //Rutas usuario deslogueado
-function DeauthenticatedUser({ login, register }) {
+function DeauthenticatedUser({ login, register,showError }) {
   console.log("here");
   return (
     <Switch>
       <Route
         path="/login"
-        render={(props) => <Login {...props} login={login} default></Login>}
+        render={(props) => <Login {...props} login={login} showError={showError} default></Login>}
         exact
       ></Route>
       <Route
         path="/register"
-        render={(props) => <Register {...props} register={register}></Register>}
+        render={(props) => <Register {...props} register={register} showError={showError}></Register>}
       ></Route>
     </Switch>
   );

@@ -2,6 +2,8 @@ import React, { useState, useEffect } from "react";
 import CardMeme from "../components/CardMeme/CardMeme";
 import { Layout, Menu, Breadcrumb, Card, Row, Col, List, Avatar } from "antd";
 import CreateComment from "../components/CreateComment/CreateComment";
+import {commentMeme} from "../helpers/meme";
+import {getToken} from "../helpers/authentication";
 const { Meta } = Card;
 
 const { SubMenu } = Menu;
@@ -11,49 +13,51 @@ export default function DetailMeme({ match }) {
   //se obtiene el valor de la query string
   const memeId = match.params.id;
   const [meme, setMeme] = useState(null);
-  const comments = [
-    {
-      user: {
-        name: "ariel",
-      },
-      comment: "hola jaja",
-    },
-    {
-      user: {
-        name: "marcos",
-      },
-      comment: "jaja me mato de la risa jaja",
-    },
-  ];
+
 
   useEffect(() => {
     async function getMeme() {
       await fetch(
-        `https://5f4db01ceeec51001608ed96.mockapi.io/api/meme/${memeId}`
+        `http://localhost:3001/api/v1/memes/${memeId}`
       )
         .then(function (response) {
           return response.json();
         })
         .then(function (data) {
           //console.log(data);
-          setMeme(data);
+          setMeme(data.data);
         });
     }
     getMeme();
   }, [memeId]);
 
-  async function onSubmitComment() {}
+  /*function updateMeme(originalMeme,updatedMeme){
+    setMeme((meme))=>{
+
+    }
+
+
+  }*/
+
+
+  async function onSubmitComment(message) {
+    const memeWithCommentUpdate=await commentMeme(meme,message,getToken());
+    setMeme(memeWithCommentUpdate);
+    
+  
+
+  }
   return (
     <>
       {meme && (
         <div style={{ marginLeft: "25%", marginRight: "25%" }}>
           <CardMeme prop={meme}></CardMeme>
           <Card>
-            <Comments comments={comments}></Comments>
+            <Comments comments={meme.allComments}></Comments>
           </Card>
           
           <Card>
-            <CreateComment show={true}></CreateComment>
+            <CreateComment show={true} onSubmitComment={onSubmitComment}></CreateComment>
           </Card>
         </div>
       )}
@@ -65,6 +69,7 @@ export default function DetailMeme({ match }) {
     if (comments.length === 0) {
       return null;
     }
+    console.log(comments);
     return (
       <List
         itemLayout="horizontal"

@@ -1,12 +1,26 @@
-export async function commentMeme(meme, comment,user) {
-  const data = {
-    meme:meme._id,
-    comment,
-    user
+import Axios from "axios";
+export async function commentMeme(meme, message,token) {
+  const comment = {
+    meme:{
+      _id:meme._id
+    },
+    comment:message
   };
- return fetch("/api/v1/comments", {
-    method: "POST",
-    body: JSON.stringify(data),
-  })
+ 
+  const {data:newComment} = await Axios.post(`http://localhost:3001/api/v1/comments`,comment,{
+    headers: {
+      'Content-Type': "application/json",
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  const memeWithCommentsUpdate={
+    ...meme,
+    allComments:[...meme.allComments,newComment.data],
+    comments:meme.comments+1
+  }
+
+  return memeWithCommentsUpdate;
+  
+
     
 }

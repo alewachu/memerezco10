@@ -2,9 +2,24 @@ import React, { useState } from "react";
 
 export default function CreateComment({ onSubmitComment,show }) {
   const [message, setMessage] = useState("");
+  const [sendingComment,setSendingComment] = useState(false);
   async function handleSubmit(e) {
     e.preventDefault();
-    alert("enviando comentario");
+    if(sendingComment){
+      return;
+    }
+
+    try{
+      setSendingComment(true);
+      await onSubmitComment(message);
+      setMessage('');
+      setSendingComment(false);
+
+    }
+    catch(error){
+      setSendingComment(false);
+
+    }
   }
 
   return (
