@@ -4,6 +4,7 @@ import Comment from '../models/Comment';
 import Meme from '../models/Meme';
 
 const router = express.Router();
+const cors = require('cors');
 
 router.get('/', async function (req, res) {
   const body = req.query;
@@ -113,15 +114,15 @@ router.delete('/:id', ensureToken, async function (req, res) {
   }
 });
 
-router.post('/', ensureToken, async function (req, res) {
-  const body = req.query;
+router.post('/', ensureToken, cors(), async function (req, res) {
+  const body = req.body;
   let query = {};
   if (body.comment) {
     query['comment'] = body.comment;
   }
 
   if (body.meme) {
-    query['meme'] = JSON.parse(body.meme);
+    query['meme'] = body.meme;
   }
 
   query['user'] = getUserByToken(req.headers['authorization']);
@@ -136,7 +137,7 @@ router.post('/', ensureToken, async function (req, res) {
         });
       }
       Meme.findByIdAndUpdate(
-        { _id: JSON.parse(body.meme)._id },
+        { _id: body.meme._id },
         { $inc: { comments: 1 }, $push: { query } },
         (err, data) => {}
       );

@@ -113,7 +113,7 @@ router.post('/', ensureToken, cors(), async function (req, res) {
     query['positive'] = body.positive;
   }
   if (body.meme) {
-    query['meme'] = JSON.parse(body.meme);
+    query['meme'] = body.meme;
   }
 
   query['user'] = getUserByToken(req.headers['authorization']);
@@ -131,7 +131,7 @@ router.post('/', ensureToken, cors(), async function (req, res) {
         ? { upvotes: 1 }
         : { downvotes: 1 };
       Meme.findByIdAndUpdate(
-        { _id: JSON.parse(body.meme)._id },
+        { _id: body.meme._id },
         { $inc: queryUpdateMeme },
         (err, data) => {}
       );
