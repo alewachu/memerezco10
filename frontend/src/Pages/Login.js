@@ -1,27 +1,17 @@
 import React from "react";
 import { Form, Input, Button, Checkbox, Row, Col, Layout } from "antd";
 
-export default function Login({ login, history,showError }) {
+export default function Login({ login, history, showError }) {
   const { Content, Footer } = Layout;
-  //const [email, setEmail] = useState('');
 
   const onFinish = async (values) => {
     const { email, password } = values;
-    try{
+    try {
       await login(email, password);
-      
-      
-      //history.push("/");
-    }catch(e){
-      
-    }
-    
-   
+    } catch (e) {}
   };
 
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
-  };
+  const onFinishFailed = (errorInfo) => {};
   return (
     <>
       <Layout>

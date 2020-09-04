@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { Form, Input, Button, Checkbox, DatePicker, Space } from "antd";
-import FormItem from "antd/lib/form/FormItem";
+import { Form, Input, Button } from "antd";
 
 export default function Register({ register }) {
   const [user, setUser] = useState({
@@ -10,12 +9,12 @@ export default function Register({ register }) {
   });
   const onFinish = ({ email, username, password }) => {
     setUser({
-        email:email,
-        username:username,
-        password:password
+      email: email,
+      username: username,
+      password: password,
     });
-    
-    register(email,username,password);
+
+    register(email, username, password);
   };
 
   const onFinishFailed = (errorInfo) => {
@@ -36,12 +35,12 @@ export default function Register({ register }) {
       >
         <Input />
       </Form.Item>
-      
 
-      <Form.Item 
-        name="email" 
-        label="Email" 
-        rules={[{ required: true, message: "Ingresa tu email de nacimiento!" }]}>
+      <Form.Item
+        name="email"
+        label="Email"
+        rules={[{ required: true, message: "Ingresa tu email de nacimiento!" }]}
+      >
         <Input />
       </Form.Item>
       <Form.Item

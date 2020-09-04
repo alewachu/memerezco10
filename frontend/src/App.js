@@ -1,7 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { enquireScreen } from "enquire-js";
 import { Layout } from "antd";
-import { BrowserRouter as Router, Route, Switch,useHistory } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Route,
+  Switch,
+  useHistory,
+} from "react-router-dom";
 import { setToken, getToken } from "./helpers/authentication";
 import "./App.scss";
 import Axios from "axios";
@@ -23,7 +28,7 @@ export default function App() {
   const [isMobile, setStateIsMobile] = useState(false);
   const [userAuth, setUserAuth] = useState(false);
   const [user, setUser] = useState(null);
-  const [error,setError] = useState(null);
+  const [error, setError] = useState(null);
   let history = useHistory();
 
   useEffect(() => {
@@ -44,10 +49,9 @@ export default function App() {
       mail: email,
       password: password,
     };
- 
+
     Axios.post("http://localhost:3001/api/v1/login", data)
       .then((resp) => {
-        
         if (resp.data.success) {
           setUserAuth(true);
           //Se guarda en sessionStorage
@@ -55,12 +59,9 @@ export default function App() {
           setUser(resp.data.user);
           setError(null);
           //history.push("/");
-          
-          
         }
       })
       .catch((e) => {
-        
         setError("las credenciales son incorrectas,intente nuevamente");
       });
   }
@@ -69,12 +70,11 @@ export default function App() {
     setUser(data.usuario);
     setToken(data.token);
   }
-  function showError(message){
+  function showError(message) {
     setError(message);
-
   }
 
-  function hiddenError(){
+  function hiddenError() {
     setUser(null);
   }
   return (
@@ -88,7 +88,11 @@ export default function App() {
           {userAuth ? (
             <RoutedAuthenticatedUser isMobile={isMobile} />
           ) : (
-            <DeauthenticatedUser login={login} register={register} showError={showError} />
+            <DeauthenticatedUser
+              login={login}
+              register={register}
+              showError={showError}
+            />
           )}
           <Switch>
             <Route path="/" exact={true}>
@@ -126,18 +130,25 @@ function RoutedAuthenticatedUser({ isMobile }) {
   );
 }
 //Rutas usuario deslogueado
-function DeauthenticatedUser({ login, register,showError }) {
-  console.log("here");
+function DeauthenticatedUser({ login, register, showError }) {
   return (
     <Switch>
       <Route
         path="/login"
-        render={(props) => <Login {...props} login={login} showError={showError} default></Login>}
+        render={(props) => (
+          <Login {...props} login={login} showError={showError} default></Login>
+        )}
         exact
       ></Route>
       <Route
         path="/register"
-        render={(props) => <Register {...props} register={register} showError={showError}></Register>}
+        render={(props) => (
+          <Register
+            {...props}
+            register={register}
+            showError={showError}
+          ></Register>
+        )}
       ></Route>
     </Switch>
   );

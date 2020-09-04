@@ -77,10 +77,7 @@ export default function Home(props) {
             "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNTAyZTlhZDZkYWMzMGY5MDAyZjFmOSIsIm5hbWUiOiJQcnVlYmE2NzY3IiwibWFpbCI6Im1haWwiLCJpYXQiOjE1OTkwOTAzNDQsImV4cCI6MTU5OTM0OTU0NH0.sj9ssTi1oaPnfzQPm_5vYUkhVGkKNcEuPu_NWXhTDvo",
         },
       });
-
-      console.log("aca", tipo, meme);
     } else {
-      console.log(tipo, meme);
     }
   };
 

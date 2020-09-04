@@ -76,10 +76,7 @@ router.get('/photo/:id', async function (req, res) {
     await User.findById({ _id: req.params.id }, (err, data) => {
       if (data) {
         if (!data.deletedAt) {
-          return res.status(200).json({
-            success: true,
-            image: data.image,
-          });
+          return res.status(200).send(data.image);
         } else {
           return res.status(404).json({
             success: false,

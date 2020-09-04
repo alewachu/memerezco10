@@ -1,25 +1,18 @@
 import React, { useState, useEffect } from "react";
 import CardMeme from "../components/CardMeme/CardMeme";
-import { Layout, Menu, Breadcrumb, Card, Row, Col, List, Avatar } from "antd";
+import { Card, List, Avatar } from "antd";
 import CreateComment from "../components/CreateComment/CreateComment";
-import {commentMeme} from "../helpers/meme";
-import {getToken} from "../helpers/authentication";
-const { Meta } = Card;
-
-const { SubMenu } = Menu;
-const { Header, Content, Sider } = Layout;
+import { commentMeme } from "../helpers/meme";
+import { getToken } from "../helpers/authentication";
 
 export default function DetailMeme({ match }) {
   //se obtiene el valor de la query string
   const memeId = match.params.id;
   const [meme, setMeme] = useState(null);
 
-
   useEffect(() => {
     async function getMeme() {
-      await fetch(
-        `http://localhost:3001/api/v1/memes/${memeId}`
-      )
+      await fetch(`http://localhost:3001/api/v1/memes/${memeId}`)
         .then(function (response) {
           return response.json();
         })
@@ -39,13 +32,9 @@ export default function DetailMeme({ match }) {
 
   }*/
 
-
   async function onSubmitComment(message) {
-    const memeWithCommentUpdate=await commentMeme(meme,message,getToken());
+    const memeWithCommentUpdate = await commentMeme(meme, message, getToken());
     setMeme(memeWithCommentUpdate);
-    
-  
-
   }
   return (
     <>
@@ -55,9 +44,12 @@ export default function DetailMeme({ match }) {
           <Card>
             <Comments comments={meme.allComments}></Comments>
           </Card>
-          
+
           <Card>
-            <CreateComment show={true} onSubmitComment={onSubmitComment}></CreateComment>
+            <CreateComment
+              show={true}
+              onSubmitComment={onSubmitComment}
+            ></CreateComment>
           </Card>
         </div>
       )}
@@ -65,11 +57,11 @@ export default function DetailMeme({ match }) {
   );
 
   function Comments({ comments }) {
-    
     if (comments.length === 0) {
       return null;
     }
-    console.log(comments);
+    console.log(comments[0].user._id);
+
     return (
       <List
         itemLayout="horizontal"
@@ -79,7 +71,9 @@ export default function DetailMeme({ match }) {
             <List.Item.Meta
               key={comment.id}
               avatar={
-                <Avatar src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png" />
+                <Avatar
+                  src={`http://localhost:3001/api/v1/users/photo/${comment.user.id}`}
+                />
               }
               title={<strong>{comment.user.name}</strong>}
               description={comment.comment}

@@ -4,16 +4,7 @@ import { Card } from "antd";
 import { DownCircleOutlined } from "@ant-design/icons";
 
 export default function CardMemeRanking(props) {
-  const {
-    user,
-    category,
-    title,
-    image,
-    upvotes,
-    downvotes,
-    vote,
-    _id,
-  } = props.prop;
+  const { title, image, upvotes } = props.prop;
   return (
     <Card
       className="card-meme-ranking"
