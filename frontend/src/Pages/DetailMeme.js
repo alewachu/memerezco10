@@ -4,7 +4,7 @@ import { Card, List, Avatar } from "antd";
 import CreateComment from "../components/CreateComment/CreateComment";
 import { commentMeme } from "../helpers/meme";
 import { getToken } from "../helpers/authentication";
-
+import Axios from "axios";
 export default function DetailMeme({ match }) {
   //se obtiene el valor de la query string
   const memeId = match.params.id;
@@ -31,11 +31,22 @@ export default function DetailMeme({ match }) {
 
 
   }*/
-
   async function onSubmitComment(message) {
     const memeWithCommentUpdate = await commentMeme(meme, message, getToken());
     setMeme(memeWithCommentUpdate);
   }
+  const getUrlImage = async (comment) => {
+    let url;
+    if (comment.user.id) {
+      let id = comment.user.id;
+      url = await Axios.get(
+        `http://localhost:3001/api/v1/users/photo/${id}`
+      ).then((url) => {
+        return url.data;
+      });
+    }
+    return url;
+  };
   return (
     <>
       {meme && (
@@ -57,11 +68,10 @@ export default function DetailMeme({ match }) {
   );
 
   function Comments({ comments }) {
-    if (comments.length === 0) {
+    console.log(comments);
+    if (!comments || comments.length === 0) {
       return null;
     }
-    console.log(comments[0].user._id);
-
     return (
       <List
         itemLayout="horizontal"
@@ -70,11 +80,7 @@ export default function DetailMeme({ match }) {
           <List.Item>
             <List.Item.Meta
               key={comment.id}
-              avatar={
-                <Avatar
-                  src={`http://localhost:3001/api/v1/users/photo/${comment.user.id}`}
-                />
-              }
+              avatar={<Avatar src={getUrlImage(comment)} />}
               title={<strong>{comment.user.name}</strong>}
               description={comment.comment}
             />

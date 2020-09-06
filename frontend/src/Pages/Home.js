@@ -1,18 +1,28 @@
 import React, { useState, useEffect } from "react";
 import CardMeme from "../components/CardMeme/CardMeme";
 import CardMemeRanking from "../components/CardMemeRanking/CardMemeRanking";
-import { List, Spin } from "antd";
+import { List, Spin, Modal } from "antd";
 import InfiniteScroll from "react-infinite-scroller";
-import Axios from "axios";
 import "../App.scss";
-
+import {
+  ExclamationCircleOutlined,
+  UpCircleTwoTone,
+  DownCircleTwoTone,
+} from "@ant-design/icons";
+import { useHistory } from "react-router-dom";
+import { getToken } from "../helpers/authentication";
+import { get, post } from "../helpers/service";
 export default function Home(props) {
+  console.log(props);
+  let history = useHistory();
+
   const { isMobile } = props;
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
   const [skip, setSkip] = useState(5);
   const [memeRanking, setMemeRanking] = useState([]);
+  const [tipeRanking, setTipeRanking] = useState("upvotes");
 
   useEffect(() => {
     async function fetchMemes() {
@@ -21,7 +31,7 @@ export default function Home(props) {
       setSkip(skip + 5);
     }
     async function rankingMeme() {
-      let ranking = await fetchDataRankingPositives();
+      let ranking = await fetchDataRanking(tipeRanking);
       setMemeRanking([...ranking, ...memeRanking]);
     }
     if (data.length < 5) {
@@ -32,20 +42,29 @@ export default function Home(props) {
     }
   });
 
-  const fetchDataRankingPositives = async () => {
-    const response = await Axios.get(
-      `http://localhost:3001/api/v1/memes?sort=upvotes&limit=3`
-    );
-    return response.data.data;
+  const fetchDataRanking = async (tipe) => {
+    const response = await get(`/api/v1/memes?sort=${tipe}&limit=3`);
+    return response;
   };
 
   const fetchData = async () => {
-    const response = await Axios.get(
-      `http://localhost:3001/api/v1/memes?limit=5&skip=${skip}`
-    );
-    return response.data.data;
+    const response = await get(`/api/v1/memes?limit=5&skip=${skip}`);
+    return response;
   };
 
+  const confirm = () => {
+    Modal.confirm({
+      title: "Alert",
+      icon: <ExclamationCircleOutlined />,
+      content: "You need to login to vote",
+      onOk: login,
+      okText: "Log in",
+      cancelText: "Cancel",
+    });
+  };
+  const login = () => {
+    history.push("/login");
+  };
   const handleInfiniteOnLoad = async () => {
     setLoading(true);
     if (data.length > 16) {
@@ -63,29 +82,36 @@ export default function Home(props) {
   };
 
   const voteMeme = (votado, tipo, meme) => {
-    if (!votado) {
-      Axios({
-        method: "POST",
-        url: "http://localhost:3001/api/v1/votes",
-        data: {
-          meme: { _id: meme },
+    if (getToken()) {
+      if (!votado) {
+        post("/api/v1/votes", {
+          meme,
           positive: tipo,
-        },
-        headers: {
-          "Content-Type": "application/json",
-          authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNTAyZTlhZDZkYWMzMGY5MDAyZjFmOSIsIm5hbWUiOiJQcnVlYmE2NzY3IiwibWFpbCI6Im1haWwiLCJpYXQiOjE1OTkwOTAzNDQsImV4cCI6MTU5OTM0OTU0NH0.sj9ssTi1oaPnfzQPm_5vYUkhVGkKNcEuPu_NWXhTDvo",
-        },
-      });
+        });
+      } else {
+      }
     } else {
+      confirm();
     }
   };
 
+  const changeTipeRankink = async (tipe) => {
+    if (tipeRanking !== tipe) {
+      setMemeRanking([]);
+      setTipeRanking(tipe);
+      let ranking = await fetchDataRanking(tipeRanking);
+      setMemeRanking([...ranking, ...memeRanking]);
+    }
+  };
   const styleCard = !isMobile
     ? { paddingLeft: "20%", paddingRight: "20%" }
     : {};
   return (
     <div className="col-memes">
+      <div>
+        <UpCircleTwoTone onClick={() => changeTipeRankink("upvotes")} />
+        <DownCircleTwoTone onClick={() => changeTipeRankink("downvotes")} />
+      </div>
       <div className="demo-infinite-container">
         <InfiniteScroll
           initialLoad={false}
@@ -112,11 +138,15 @@ export default function Home(props) {
         </InfiniteScroll>
       </div>
       {!isMobile && (
-        <div className="ranking-col">
+        <div>
           {memeRanking.map((item, index) => {
             return (
               <div className="ranking-meme">
-                <CardMemeRanking key={item} prop={item} />
+                <CardMemeRanking
+                  key={item}
+                  prop={item}
+                  tipeRanking={tipeRanking}
+                />
               </div>
             );
           })}

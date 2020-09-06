@@ -52,12 +52,10 @@
 */
 .demo-infinite-container {
   z-index: 2;
-
   border: 1px solid #e8e8e8;
   border-radius: 4px;
   overflow: auto;
   height: 90vh;
-  width: 100%;
 }
 .demo-loading-container {
   position: absolute;
@@ -65,7 +63,6 @@
   width: 100%;
   text-align: center;
 }
-
 .ranking-col {
   position: fixed;
   right: 0px;
@@ -75,7 +72,8 @@
 .ranking-meme {
   padding-right: 10%;
 }
-
+/*
 .col-memes {
   display: flex;
 }
+*/

@@ -58,7 +58,7 @@ export default function App() {
           setToken(resp.data.token);
           setUser(resp.data.user);
           setError(null);
-          //history.push("/");
+          history.push("/");
         }
       })
       .catch((e) => {
@@ -101,6 +101,10 @@ export default function App() {
             <Route path="/Upload" exact={true}>
               <Upload className="content" />
             </Route>
+            <Route
+              path="/meme/:id"
+              render={(props) => <DetailMeme {...props}></DetailMeme>}
+            ></Route>
             <Route path="*" exact={true}>
               <Error404 />
             </Route>
@@ -122,10 +126,6 @@ function RoutedAuthenticatedUser({ isMobile }) {
       <Route path="/" exact={true}>
         <Home className="content" isMobile={isMobile} />
       </Route>
-      <Route
-        path="/meme/:id"
-        render={(props) => <DetailMeme {...props}></DetailMeme>}
-      ></Route>
     </Switch>
   );
 }
