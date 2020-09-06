@@ -116,20 +116,17 @@ router.get('/:id', async function (req, res) {
       if (data) {
         if (!data.deletedAt) {
           const meme = JSON.parse(JSON.stringify(data));
-          await Comment.find(
-            { 'meme._id': meme._id },
-            async (err, comments) => {
-              if (err) {
-                return res.status(500).json({
-                  success: false,
-                  message: 'Error 500',
-                });
-              }
-              if (comments && comments.length > 0) {
-                meme.allComments = comments;
-              }
+          await Comment.find({ 'meme._id': meme.id }, async (err, comments) => {
+            if (err) {
+              return res.status(500).json({
+                success: false,
+                message: 'Error 500',
+              });
             }
-          );
+            if (comments && comments.length > 0) {
+              meme.allComments = comments;
+            }
+          });
           return res.status(200).json({
             success: true,
             data: meme,
