@@ -44,12 +44,12 @@ export default function Home(props) {
 
   const fetchDataRanking = async (tipe) => {
     const response = await get(`/api/v1/memes?sort=${tipe}&limit=3`);
-    return response;
+    return response.data;
   };
 
   const fetchData = async () => {
     const response = await get(`/api/v1/memes?limit=5&skip=${skip}`);
-    return response;
+    return response.data;
   };
 
   const confirm = () => {
