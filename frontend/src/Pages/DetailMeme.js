@@ -45,6 +45,7 @@ export default function DetailMeme({ match }) {
         return url.data;
       });
     }
+    console.log(url);
     return url;
   };
   return (

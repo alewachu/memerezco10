@@ -194,7 +194,7 @@ router.delete('/:id', ensureToken, async function (req, res) {
 router.post('/', ensureToken, cors(), async function (req, res) {
   const body = req.body;
   let query = {};
-  if (body.positive) {
+  if (body.positive !== undefined && body.positive !== null) {
     query['positive'] = body.positive;
   }
   if (body.meme) {
@@ -202,7 +202,8 @@ router.post('/', ensureToken, cors(), async function (req, res) {
   }
 
   query['user'] = getUserByToken(req.headers['authorization']);
-  if (body.meme && body.positive) {
+
+  if (body.meme && body.positive !== undefined && body.positive !== null) {
     try {
       const querySearchVote = {
         'user._id': query['user']._id,

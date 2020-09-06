@@ -1,4 +1,15 @@
 .card-meme {
   margin-bottom: 10px !important;
-  margin-top: 10px !important;
+  margin-top: 0px !important;
+  width: 90% !important;
+  .ant-card-cover {
+    margin: auto !important;
+    max-width: 60%;
+  }
+  .ant-card-body {
+    display: none;
+  }
+  .ant-card-head-title {
+    padding: 0px !important;
+  }
 }

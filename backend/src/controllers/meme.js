@@ -67,12 +67,10 @@ router.get('/', async function (req, res) {
       if (req.headers['authorization']) {
         // Logueado
         const user = getUserByToken(req.headers['authorization']);
-
         for (let i = 0; i < memes.length; i++) {
           const meme = memes[i];
-          console.log(meme);
           await Vote.find(
-            { 'meme._id': meme._id, 'user._id': user._id },
+            { 'meme._id': meme.id, 'user._id': user._id, deletedAt: null },
             async (err, data) => {
               if (err) {
                 return res.status(500).json({
@@ -80,10 +78,11 @@ router.get('/', async function (req, res) {
                   message: 'Error 500',
                 });
               }
-              // cambiar por _id hardcodeado
               if (data && data.length > 0) {
                 if (typeof data[0].positive !== 'undefined') {
+                  console.log(data[0]);
                   meme['positive'] = data[0].positive;
+                  meme['idVote'] = data[0]._id;
                 } else {
                   meme.positive = null;
                 }

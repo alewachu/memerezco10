@@ -11,7 +11,7 @@ import {
 } from "@ant-design/icons";
 import { useHistory } from "react-router-dom";
 import { getToken } from "../helpers/authentication";
-import { get, post } from "../helpers/service";
+import { get, post, eliminate, put } from "../helpers/service";
 export default function Home(props) {
   console.log(props);
   let history = useHistory();
@@ -75,21 +75,44 @@ export default function Home(props) {
     }
     let array = await fetchData();
     setData([...array, ...data]);
-
+    let arrayRanking = await fetchDataRanking();
+    setMemeRanking([...arrayRanking, ...memeRanking]);
     setInterval(() => {
       setLoading(false);
     }, 3000);
   };
 
-  const voteMeme = (votado, tipo, meme) => {
+  const voteMeme = (tipo, meme, voto, positive) => {
+    console.log(tipo, meme, voto, positive);
     if (getToken()) {
-      if (!votado) {
+      if (voto) {
+        if (tipo === positive) {
+          eliminate("/api/v1/votes", voto);
+        } else {
+          put("/api/v1/votes", voto);
+        }
+      } else {
         post("/api/v1/votes", {
           meme,
           positive: tipo,
         });
-      } else {
       }
+      /*
+
+      if (!votado) {
+        if (votado) {
+          post("/api/v1/votes", {
+            meme,
+            positive: tipo,
+          });
+        } else {
+          put("/api/v1/votes", voto);
+        }
+      } else {
+        // Si voto, es el id del voto para eliminarlo
+        eliminate("/api/v1/votes", voto);
+      }
+*/
     } else {
       confirm();
     }
@@ -108,10 +131,6 @@ export default function Home(props) {
     : {};
   return (
     <div className="col-memes">
-      <div>
-        <UpCircleTwoTone onClick={() => changeTipeRankink("upvotes")} />
-        <DownCircleTwoTone onClick={() => changeTipeRankink("downvotes")} />
-      </div>
       <div className="demo-infinite-container">
         <InfiniteScroll
           initialLoad={false}
@@ -121,24 +140,69 @@ export default function Home(props) {
           useWindow={false}
           threshold={200}
         >
-          <List
-            dataSource={data}
-            renderItem={(item, index) => (
-              <List.Item key={index} style={styleCard}>
-                <CardMeme key={index} prop={item} voteMeme={voteMeme} />
-              </List.Item>
-            )}
-          >
-            {loading && hasMore && (
-              <div className="demo-loading-container">
-                <Spin />
+          <div style={{ display: "flex" }}>
+            <div style={{ width: "20%" }}>categorias</div>
+            <div style={{ width: "60%", marginTop: "40px" }}>
+              <List
+                dataSource={data}
+                renderItem={(item, index) => (
+                  <List.Item key={index} style={{ padding: "0px" }}>
+                    <CardMeme
+                      key={index}
+                      prop={item}
+                      voteMeme={voteMeme}
+                      style={{ marginLeft: "10%", marginRight: "10%" }}
+                    />
+                  </List.Item>
+                )}
+              ></List>
+            </div>
+            <div
+              style={{ width: "20%", textAlign: "center", marginTop: "5px" }}
+            >
+              <div>
+                <UpCircleTwoTone
+                  onClick={() => changeTipeRankink("upvotes")}
+                  style={{ fontSize: "20px" }}
+                />
+                <big>
+                  <strong>Ranking</strong>
+                </big>
+                <DownCircleTwoTone
+                  onClick={() => changeTipeRankink("downvotes")}
+                  style={{ fontSize: "20px" }}
+                />
               </div>
-            )}
-          </List>
+              <List
+                dataSource={memeRanking}
+                renderItem={(item, index) => (
+                  <List.Item key={index}>
+                    <CardMemeRanking
+                      key={item}
+                      prop={item}
+                      tipeRanking={tipeRanking}
+                    />
+                  </List.Item>
+                )}
+              ></List>
+            </div>
+          </div>
+          {loading && hasMore && (
+            <div className="demo-loading-container">
+              <Spin />
+            </div>
+          )}
         </InfiniteScroll>
       </div>
-      {!isMobile && (
-        <div>
+    </div>
+  );
+}
+
+// api/v1/votes
+// {meme: {_id: dasdsadsa}, positive: 0}
+/*
+ {!isMobile && (
+        <div style={{ maxWidth: "20ch" }}>
           {memeRanking.map((item, index) => {
             return (
               <div className="ranking-meme">
@@ -152,9 +216,4 @@ export default function Home(props) {
           })}
         </div>
       )}
-    </div>
-  );
-}
-
-// api/v1/votes
-// {meme: {_id: dasdsadsa}, positive: 0}
+      */

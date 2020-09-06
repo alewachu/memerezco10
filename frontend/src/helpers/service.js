@@ -13,6 +13,7 @@ const config = token
     }
   : null;
 export const get = async (url) => {
+  console.log(config);
   const response = await Axios.get(API_ENDPOINT + url, config);
   return response.data;
 };

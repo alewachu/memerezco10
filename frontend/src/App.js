@@ -105,11 +105,11 @@ export default function App() {
               path="/meme/:id"
               render={(props) => <DetailMeme {...props}></DetailMeme>}
             ></Route>
-            <Route path="*" exact={true}>
-              <Error404 />
-            </Route>
           </Switch>
         </Content>
+        <Route path="*" exact={true}>
+          <Error404 />
+        </Route>
         {isMobile && (
           <Footer className="menu-bottom-color">
             <MenuBottom />

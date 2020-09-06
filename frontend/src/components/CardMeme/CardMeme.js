@@ -21,14 +21,15 @@ export default function CardMeme(props) {
     image,
     upvotes,
     downvotes,
-    vote,
+    positive,
     id,
+    idVote,
   } = props.prop;
   const voteMeme = props.voteMeme;
   const viewMeme = (id) => {
     history.push(`/meme/${id}`);
   };
-  console.log("hola", vote);
+  console.log("vote?", positive);
   return (
     <>
       <Card
@@ -40,35 +41,34 @@ export default function CardMeme(props) {
           />
         }
         extra={<h2 onClick={() => viewMeme(id)}>{title}</h2>}
-        style={{ width: "100%", height: "60%" }}
         cover={<img alt="example" src={image} onClick={() => viewMeme(id)} />}
         actions={[
           <>
-            {vote === 1 && (
+            {positive === 1 && (
               <UpCircleTwoTone
                 key="upCircle"
-                onClick={() => voteMeme(true, 1, id)}
+                onClick={() => voteMeme(1, id, idVote, positive)}
               />
             )}
-            {vote !== 1 && (
+            {positive !== 1 && (
               <UpCircleOutlined
                 key="upCircle"
-                onClick={() => voteMeme(false, 1, id)}
+                onClick={() => voteMeme(1, id, idVote, positive)}
               />
             )}
             {upvotes}
           </>,
           <>
-            {vote === 0 && (
+            {positive === 0 && (
               <DownCircleTwoTone
                 key="upCircle"
-                onClick={() => voteMeme(true, 0, id)}
+                onClick={() => voteMeme(0, id, idVote, positive)}
               />
             )}
-            {vote !== 0 && (
+            {positive !== 0 && (
               <DownCircleOutlined
                 key="upCircle"
-                onClick={() => voteMeme(false, 0, id)}
+                onClick={() => voteMeme(0, id, idVote, positive)}
               />
             )}
             {downvotes}

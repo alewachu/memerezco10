@@ -1,6 +1,7 @@
 .card-meme-ranking {
-  margin-bottom: 10px !important;
-  margin-top: 10px !important;
+  width: 100%;
+  // margin-bottom: 10px !important;
+  //  margin-top: 10px !important;
   .ant-card-head {
     height: 10px;
     width: auto;
@@ -18,7 +19,7 @@
   }
   */
   .ant-card-cover {
-    margin-left: 25%;
+    margin: auto !important;
     max-width: 60px;
   }
 }
