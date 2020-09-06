@@ -5,6 +5,7 @@ import Vote from '../models/Vote';
 import Comment from '../models/Comment';
 
 const router = express.Router();
+const cors = require('cors');
 
 router.get('/', async function (req, res) {
   const body = req.query;
@@ -43,6 +44,7 @@ router.get('/', async function (req, res) {
   const skip = body.skip ? parseInt(body.skip) : 0;
   const limit = body.limit ? parseInt(body.limit) : 5;
 
+  // Verificamos si debemos ordenar de alguna manera, y lo agregamos
   let sort = {};
   if (body.sort) {
     sort[body['sort']] = -1;
@@ -68,6 +70,7 @@ router.get('/', async function (req, res) {
 
         for (let i = 0; i < memes.length; i++) {
           const meme = memes[i];
+          console.log(meme);
           await Vote.find(
             { 'meme._id': meme._id, 'user._id': user._id },
             async (err, data) => {
@@ -181,7 +184,7 @@ router.delete('/:id', ensureToken, async function (req, res) {
   }
 });
 
-router.post('/', ensureToken, async function (req, res) {
+router.post('/', ensureToken, cors(), async function (req, res) {
   const body = req.query;
   let query = {};
   if (body.title) {

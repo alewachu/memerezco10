@@ -81,10 +81,9 @@ app.post('/api/v1/login', cors(), (req, res) => {
           expiresIn: process.env.EXPIRES_TOKEN,
         }
       );
-
       res.json({
         success: true,
-        user: { name: user.name, mail: user.mail, _id: user._id },
+        user: { name: user.name, mail: user.mail, id: user._id },
         token,
       });
     });

@@ -10,4 +10,12 @@ const categorySchema = new Schema({
   deletedAt: { type: Date, default: null },
 });
 
+categorySchema.set('toJSON', {
+  transform: function (doc, schema) {
+    schema.id = schema._id;
+    delete schema._id;
+    delete schema.__v;
+  },
+});
+
 module.exports = model('Category', categorySchema, 'category');

@@ -1,8 +1,9 @@
 import express from 'express';
-import { getDateTimeFullBD, ensureToken, getUserByToken } from '../helpers.js';
+import { getDateTimeFullBD, ensureToken } from '../helpers.js';
 import Category from '../models/Category';
 
 const router = express.Router();
+const cors = require('cors');
 
 router.get('/', async function (req, res) {
   const body = req.query;
@@ -106,7 +107,7 @@ router.delete('/:id', ensureToken, async function (req, res) {
   }
 });
 
-router.post('/', ensureToken, async function (req, res) {
+router.post('/', cors(), ensureToken, async function (req, res) {
   const body = req.query;
   let query = {};
   if (body.name) {

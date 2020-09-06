@@ -4,6 +4,7 @@ import User from '../models/User';
 const bcrypt = require('bcrypt');
 
 const router = express.Router();
+const cors = require('cors');
 
 router.get('/', async function (req, res) {
   const body = req.query;
@@ -172,7 +173,7 @@ router.delete('/:id', ensureToken, async function (req, res) {
   }
 });
 
-router.post('/', ensureToken, async function (req, res) {
+router.post('/', ensureToken, cors(), async function (req, res) {
   const body = req.query;
   let query = {};
   if (body.name) {

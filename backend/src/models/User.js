@@ -14,10 +14,14 @@ const userSchema = new Schema({
   deletedAt: { type: Date, default: null },
 });
 
-userSchema.methods.toJSON = function () {
-  const obj = this.toObject(); // probar con const
-  delete obj.password;
-  return obj;
-};
+userSchema.set('toJSON', {
+  transform: function (doc, schema) {
+    schema.id = schema._id;
+    delete schema._id;
+    delete schema.__v;
+    delete schema.password;
+  },
+  virtuals: true,
+});
 
 module.exports = model('User', userSchema, 'user');

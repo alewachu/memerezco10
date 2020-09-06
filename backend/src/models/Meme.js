@@ -21,4 +21,16 @@ const memeSchema = new Schema({
   deletedAt: { type: Date, default: null },
 });
 
+memeSchema.set('toJSON', {
+  transform: function (doc, schema) {
+    schema.id = schema._id;
+    delete schema._id;
+    schema.user.id = schema.user._id;
+    delete schema.user._id;
+    schema.category.id = schema.category._id;
+    delete schema.category._id;
+    delete schema.__v;
+  },
+});
+
 module.exports = model('Meme', memeSchema, 'meme');
