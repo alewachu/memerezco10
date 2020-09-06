@@ -114,6 +114,33 @@ router.get('/:id', async function (req, res) {
       if (data) {
         if (!data.deletedAt) {
           const meme = JSON.parse(JSON.stringify(data));
+
+          if (req.headers['authorization']) {
+            // Logueado
+            const user = getUserByToken(req.headers['authorization']);
+            await Vote.find(
+              { 'meme._id': meme.id, 'user._id': user._id, deletedAt: null },
+              async (err, data) => {
+                if (err) {
+                  return res.status(500).json({
+                    success: false,
+                    message: 'Error 500',
+                  });
+                }
+                if (data && data.length > 0) {
+                  if (typeof data[0].positive !== 'undefined') {
+                    meme['positive'] = data[0].positive;
+                    meme['idVote'] = data[0]._id;
+                  } else {
+                    meme.positive = null;
+                  }
+                } else {
+                  meme.positive = null;
+                }
+              }
+            );
+          }
+
           await Comment.find({ 'meme._id': meme.id }, async (err, comments) => {
             if (err) {
               return res.status(500).json({
