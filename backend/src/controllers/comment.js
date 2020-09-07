@@ -122,32 +122,57 @@ router.post('/', ensureToken, cors(), async function (req, res) {
   }
 
   if (body.meme) {
-    query['meme'] = body.meme;
+    query['meme'] = { _id: body.meme };
   }
 
   query['user'] = getUserByToken(req.headers['authorization']);
-
   try {
     const comment = new Comment(query);
-    await comment.save((err, data) => {
-      if (err) {
-        return res.status(400).json({
-          ok: false,
-          err,
-        });
-      }
-      Meme.findByIdAndUpdate(
-        { _id: body.meme._id },
-        { $inc: { comments: 1 }, $push: { query } },
-        (err, data) => {}
-      );
+    let newComment;
+    if (body.parent) {
+      Comment.findByIdAndUpdate(
+        { _id: body.parent },
+        { $push: { children: query } },
+        (err, data) => {
+          if (err) {
+            return res.status(500).json({
+              success: false,
+              message: 'Error 500',
+            });
+          }
 
-      return res.status(200).json({
-        success: true,
-        data,
+          newComment = data;
+        }
+      );
+    } else {
+      // No forma parte de un hilo
+      await comment.save((err, data) => {
+        if (err) {
+          return res.status(400).json({
+            ok: false,
+            err,
+          });
+        }
+        newComment = data;
       });
+    }
+
+    Meme.findByIdAndUpdate(
+      { _id: query['meme']._id },
+      { $inc: { comments: 1 } },
+      (err, data) => {}
+    );
+
+    return res.status(200).json({
+      success: true,
+      data: newComment,
     });
-  } catch (e) {}
+  } catch (e) {
+    return res.status(500).json({
+      success: false,
+      message: 'Error 500',
+    });
+  }
 });
 
 export default router;

@@ -80,7 +80,6 @@ router.get('/', async function (req, res) {
               }
               if (data && data.length > 0) {
                 if (typeof data[0].positive !== 'undefined') {
-                  console.log(data[0]);
                   meme['positive'] = data[0].positive;
                   meme['idVote'] = data[0]._id;
                 } else {
@@ -115,6 +114,33 @@ router.get('/:id', async function (req, res) {
       if (data) {
         if (!data.deletedAt) {
           const meme = JSON.parse(JSON.stringify(data));
+
+          if (req.headers['authorization']) {
+            // Logueado
+            const user = getUserByToken(req.headers['authorization']);
+            await Vote.find(
+              { 'meme._id': meme.id, 'user._id': user._id, deletedAt: null },
+              async (err, data) => {
+                if (err) {
+                  return res.status(500).json({
+                    success: false,
+                    message: 'Error 500',
+                  });
+                }
+                if (data && data.length > 0) {
+                  if (typeof data[0].positive !== 'undefined') {
+                    meme['positive'] = data[0].positive;
+                    meme['idVote'] = data[0]._id;
+                  } else {
+                    meme.positive = null;
+                  }
+                } else {
+                  meme.positive = null;
+                }
+              }
+            );
+          }
+
           await Comment.find({ 'meme._id': meme.id }, async (err, comments) => {
             if (err) {
               return res.status(500).json({
@@ -181,7 +207,7 @@ router.delete('/:id', ensureToken, async function (req, res) {
 });
 
 router.post('/', ensureToken, cors(), async function (req, res) {
-  const body = req.query;
+  const body = req.body;
   let query = {};
   if (body.title) {
     query['title'] = body.title;
@@ -190,7 +216,7 @@ router.post('/', ensureToken, cors(), async function (req, res) {
     query['image'] = body.image;
   }
   if (body.category) {
-    query['category'] = JSON.parse(body.category);
+    query['category'] = body.category;
   }
 
   query['user'] = getUserByToken(req.headers['authorization']);
