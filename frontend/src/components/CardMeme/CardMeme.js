@@ -29,7 +29,6 @@ export default function CardMeme(props) {
   const viewMeme = (id) => {
     history.push(`/meme/${id}`);
   };
-  console.log("vote?", positive);
   return (
     <>
       <Card

@@ -3,51 +3,35 @@ import CardMeme from "../components/CardMeme/CardMeme";
 import { Card, List, Avatar } from "antd";
 import CreateComment from "../components/CreateComment/CreateComment";
 import { commentMeme } from "../helpers/meme";
-import { getToken } from "../helpers/authentication";
-import Axios from "axios";
+import { get } from "../helpers/service";
+
 export default function DetailMeme({ match }) {
   //se obtiene el valor de la query string
   const memeId = match.params.id;
   const [meme, setMeme] = useState(null);
 
   useEffect(() => {
-    async function getMeme() {
-      await fetch(`http://localhost:3001/api/v1/memes/${memeId}`)
-        .then(function (response) {
-          return response.json();
-        })
-        .then(function (data) {
-          //console.log(data);
-          setMeme(data.data);
-        });
-    }
+    const getMeme = async () => {
+      const response = await get(`/api/v1/memes/${memeId}`);
+      setMeme(response.data);
+    };
     getMeme();
   }, [memeId]);
 
-  /*function updateMeme(originalMeme,updatedMeme){
-    setMeme((meme))=>{
-
-    }
-
-
-  }*/
-  async function onSubmitComment(message) {
-    const memeWithCommentUpdate = await commentMeme(meme, message, getToken());
+  const onSubmitComment = async (message) => {
+    const memeWithCommentUpdate = await commentMeme(meme, message);
     setMeme(memeWithCommentUpdate);
-  }
+  };
   const getUrlImage = async (comment) => {
     let url;
     if (comment.user.id) {
-      let id = comment.user.id;
-      url = await Axios.get(
-        `http://localhost:3001/api/v1/users/photo/${id}`
-      ).then((url) => {
-        return url.data;
-      });
+      const response = await get(`/api/v1/users/photo/${comment.user.id}`);
+      url = response;
+      return url;
     }
-    console.log(url);
     return url;
   };
+
   return (
     <>
       {meme && (
@@ -69,7 +53,6 @@ export default function DetailMeme({ match }) {
   );
 
   function Comments({ comments }) {
-    console.log(comments);
     if (!comments || comments.length === 0) {
       return null;
     }
