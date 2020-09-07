@@ -8,6 +8,7 @@ import {
   useHistory,
 } from "react-router-dom";
 import { setToken, getToken } from "./helpers/authentication";
+import {post} from "./helpers/service";
 import "./App.scss";
 import Axios from "axios";
 // Menu top
@@ -29,7 +30,6 @@ export default function App() {
   const [userAuth, setUserAuth] = useState(false);
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
-  let history = useHistory();
 
   useEffect(() => {
     if (getToken()) {
@@ -50,20 +50,22 @@ export default function App() {
       password: password,
     };
 
-    Axios.post("http://localhost:3001/api/v1/login", data)
-      .then((resp) => {
-        if (resp.data.success) {
-          setUserAuth(true);
-          //Se guarda en sessionStorage
-          setToken(resp.data.token);
-          setUser(resp.data.user);
-          setError(null);
-          history.push("/");
-        }
-      })
-      .catch((e) => {
-        setError("las credenciales son incorrectas,intente nuevamente");
-      });
+    const resp= await post("/api/v1/login",data);
+    console.log(resp);
+    //if(resp)
+    if (resp.success) {
+      setUserAuth(true);
+      //Se guarda en sessionStorage
+      setToken(resp.token);
+      setUser(resp.user);
+      setError(null);
+     
+    }
+    else{
+      setError(resp.err.message);
+    }
+    
+      
   }
   async function register(user) {
     const { data } = await Axios.post("/api/v1/users", user);
@@ -85,19 +87,22 @@ export default function App() {
         </Header>
         <MessageError message={error}></MessageError>
         <Content className="site-layout-content">
-          {userAuth ? (
-            <RoutedAuthenticatedUser isMobile={isMobile} />
-          ) : (
-            <DeauthenticatedUser
-              login={login}
-              register={register}
-              showError={showError}
-            />
-          )}
           <Switch>
             <Route path="/" exact={true}>
               <Home className="content" isMobile={isMobile} />
             </Route>
+            <Route
+              path="/login"
+              render={(props) => (
+                <Login
+                  {...props}
+                  login={login}
+                  showError={showError}
+                  default
+                ></Login>
+              )}
+              exact
+            ></Route>
             <Route path="/Upload" exact={true}>
               <Upload className="content" />
             </Route>
@@ -107,9 +112,6 @@ export default function App() {
             ></Route>
           </Switch>
         </Content>
-        <Route path="*" exact={true}>
-          <Error404 />
-        </Route>
         {isMobile && (
           <Footer className="menu-bottom-color">
             <MenuBottom />
@@ -120,7 +122,7 @@ export default function App() {
   );
 }
 //Rutas usuario logueado
-function RoutedAuthenticatedUser({ isMobile }) {
+/*function RoutedAuthenticatedUser({ isMobile }) {
   return (
     <Switch>
       <Route path="/" exact={true}>
@@ -152,4 +154,4 @@ function DeauthenticatedUser({ login, register, showError }) {
       ></Route>
     </Switch>
   );
-}
+}*/

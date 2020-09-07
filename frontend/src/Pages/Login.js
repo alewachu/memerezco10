@@ -8,6 +8,7 @@ export default function Login({ login, history, showError }) {
     const { email, password } = values;
     try {
       await login(email, password);
+      history.push("/");
     } catch (e) {}
   };
 
