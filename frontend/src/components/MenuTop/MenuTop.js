@@ -5,9 +5,10 @@ import { Link } from "react-router-dom";
 import { MenuOutlined } from "@ant-design/icons";
 import { Drawer, List } from "antd-mobile";
 import { item } from "../../helpers/item.menu";
+import MenuItem from "antd/lib/menu/MenuItem";
 
 export default function MenuTop(props) {
-  const { isMobile } = props;
+  const { userAuth, isMobile,logout } = props;
   const [docker, setDocker] = useState(false);
 
   const onDock = () => {
@@ -25,6 +26,10 @@ export default function MenuTop(props) {
       })}
     </List>
   );
+
+  const handleLogout= ()=>{
+    logout();
+  }
 
   return (
     <div className="menu-top">
@@ -63,16 +68,24 @@ export default function MenuTop(props) {
 
       {!isMobile && (
         <Menu theme="dark" mode={isMobile ? "inline" : "horizontal"}>
-          {item.map((item) => {
-            return (
-              <Menu.Item key={item.key}>
-                <Link to={item.to}>{item.name}</Link>
-              </Menu.Item>
-            );
-          })}
+          <MenuItem>
+            <Link to="/">Home</Link>
+          </MenuItem>
+          <MenuItem>
+            <Link to="/about">About</Link>
+          </MenuItem>
+          {userAuth && (
+            <MenuItem>
+              <Link onClick={handleLogout} to="#">Logout</Link>
+            </MenuItem>
+          )}
+          {!userAuth && (
+            <MenuItem>
+              <Link to="/login">Login</Link>
+            </MenuItem>
+          )}
         </Menu>
       )}
     </div>
   );
 }
-//      <Menu theme="dark" mode={isMobile ? "inline" : "horizontal"}>

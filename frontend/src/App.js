@@ -1,14 +1,9 @@
 import React, { useEffect, useState } from "react";
 import { enquireScreen } from "enquire-js";
 import { Layout } from "antd";
-import {
-  BrowserRouter as Router,
-  Route,
-  Switch,
-  useHistory,
-} from "react-router-dom";
-import { setToken, getToken } from "./helpers/authentication";
-import {post} from "./helpers/service";
+import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { setToken, getToken, deleteToken } from "./helpers/authentication";
+import { post } from "./helpers/service";
 import "./App.scss";
 import Axios from "axios";
 // Menu top
@@ -50,8 +45,7 @@ export default function App() {
       password: password,
     };
 
-    const resp= await post("/api/v1/login",data);
-    console.log(resp);
+    const resp = await post("/api/v1/login", data);
     //if(resp)
     if (resp.success) {
       setUserAuth(true);
@@ -59,13 +53,10 @@ export default function App() {
       setToken(resp.token);
       setUser(resp.user);
       setError(null);
-     
-    }
-    else{
+      window.location.replace("/");
+    } else {
       setError(resp.err.message);
     }
-    
-      
   }
   async function register(user) {
     const { data } = await Axios.post("/api/v1/users", user);
@@ -79,11 +70,16 @@ export default function App() {
   function hiddenError() {
     setUser(null);
   }
+  const logout = () => {
+    deleteToken();
+    setUserAuth(false);
+    setUser(null);
+  };
   return (
     <Layout>
       <Router>
         <Header>
-          <MenuTop isMobile={isMobile} />
+          <MenuTop isMobile={isMobile} userAuth={userAuth} logout={logout} />
         </Header>
         <MessageError message={error}></MessageError>
         <Content className="site-layout-content">
@@ -98,11 +94,13 @@ export default function App() {
                   {...props}
                   login={login}
                   showError={showError}
-                  default
+                  userAuth={userAuth}
+                  setUserAuth={setUserAuth}
                 ></Login>
               )}
               exact
             ></Route>
+
             <Route path="/Upload" exact={true}>
               <Upload className="content" />
             </Route>
