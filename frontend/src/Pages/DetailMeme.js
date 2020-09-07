@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import CardMeme from "../components/CardMeme/CardMeme";
-import { Card, List, Avatar } from "antd";
+import { Card, List, Avatar, Comment, message, Form } from "antd";
 import CreateComment from "../components/CreateComment/CreateComment";
 import { commentMeme } from "../helpers/meme";
 import { get } from "../helpers/service";
@@ -9,6 +9,7 @@ export default function DetailMeme({ match }) {
   //se obtiene el valor de la query string
   const memeId = match.params.id;
   const [meme, setMeme] = useState(null);
+  const [commentFather,setCommentFather]= useState(null);
 
   useEffect(() => {
     const getMeme = async () => {
@@ -22,6 +23,17 @@ export default function DetailMeme({ match }) {
     const memeWithCommentUpdate = await commentMeme(meme, message);
     setMeme(memeWithCommentUpdate);
   };
+
+  const onClickReply = (fatherComment) => {
+    //alert(`comentando a ${fatherComment}`);
+    //await commentMeme(fatherComment,message);
+    //setCommentChildren(true);
+    setCommentFather(fatherComment);
+
+  };
+  const onSubmitChildrenComment = async () =>{
+    alert(`enviando comentario a comentario id ${commentFather}`);
+  }
   const getUrlImage = async (comment) => {
     let url;
     if (comment.user.id) {
@@ -56,21 +68,60 @@ export default function DetailMeme({ match }) {
     if (!comments || comments.length === 0) {
       return null;
     }
+    console.log(comments);
     return (
-      <List
-        itemLayout="horizontal"
-        dataSource={comments}
-        renderItem={(comment) => (
-          <List.Item>
-            <List.Item.Meta
+      <>
+        {comments.map((comment) => {
+          return (
+            <Comment
               key={comment.id}
-              avatar={<Avatar src={getUrlImage(comment)} />}
-              title={<strong>{comment.user.name}</strong>}
-              description={comment.comment}
-            />
-          </List.Item>
-        )}
-      />
+              actions={[
+                <>
+                  <span
+                    key="comment-nested-reply-to"
+                    onClick={() => onClickReply(comment.id)}
+                  >
+                    Reply
+                  </span>
+                </>,
+              ]}
+              author={<a>{comment.user.name}</a>}
+              avatar={
+                <Avatar
+                  src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                  alt="Han Solo"
+                />
+              }
+              content={<p>{comment.comment}</p>}
+            >
+              {comment.children.length > 0 && (
+                <>
+                  <ChildrenComments
+                    childrenComments={comment.children}
+                  ></ChildrenComments>
+                </>
+              )}
+              {comment.id == commentFather && <CreateComment show onSubmitComment={onSubmitChildrenComment}></CreateComment>}
+            </Comment>
+          );
+        })}
+      </>
     );
+  }
+  function ChildrenComments({ childrenComments }) {
+    return childrenComments.map((comment) => {
+      return (
+        <Comment
+          content={<p>{comment.comment}</p>}
+          author={<a>{comment.user.name}</a>}
+          avatar={
+            <Avatar
+              src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+              alt="Han Solo"
+            />
+          }
+        ></Comment>
+      );
+    });
   }
 }
