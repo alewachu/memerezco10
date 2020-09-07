@@ -13,10 +13,8 @@ import { useHistory } from "react-router-dom";
 import { getToken } from "../helpers/authentication";
 import { get, post, eliminate, put } from "../helpers/service";
 export default function Home(props) {
-  console.log(props);
   let history = useHistory();
 
-  const { isMobile } = props;
   const [data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
   const [hasMore, setHasMore] = useState(true);
@@ -83,7 +81,6 @@ export default function Home(props) {
   };
 
   const voteMeme = (tipo, meme, voto, positive) => {
-    console.log(tipo, meme, voto, positive);
     if (getToken()) {
       if (voto) {
         if (tipo === positive) {
@@ -97,22 +94,6 @@ export default function Home(props) {
           positive: tipo,
         });
       }
-      /*
-
-      if (!votado) {
-        if (votado) {
-          post("/api/v1/votes", {
-            meme,
-            positive: tipo,
-          });
-        } else {
-          put("/api/v1/votes", voto);
-        }
-      } else {
-        // Si voto, es el id del voto para eliminarlo
-        eliminate("/api/v1/votes", voto);
-      }
-*/
     } else {
       confirm();
     }
@@ -126,9 +107,7 @@ export default function Home(props) {
       setMemeRanking([...ranking, ...memeRanking]);
     }
   };
-  const styleCard = !isMobile
-    ? { paddingLeft: "20%", paddingRight: "20%" }
-    : {};
+
   return (
     <div className="col-memes">
       <div className="demo-infinite-container">
