@@ -4,8 +4,8 @@ import { getToken } from "../helpers/authentication";
 import { Form, Select, Input, Button ,Layout,Row,Col, Avatar} from "antd";
 
 export default function UploadMeme() {
-  const destination = "memestest"; 
-  const cloudN = 'grupo10';
+  const destination = ""; 
+  const cloudN = '';
 
   const { Content, Footer } = Layout;
   const [urlimage ,setUrl] = useState('');
