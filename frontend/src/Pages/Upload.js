@@ -1,109 +1,147 @@
 import React, { useState } from "react";
 import Axios from "axios";
+import { getToken } from "../helpers/authentication";
+import { Form, Select, Input, Button ,Layout,Row,Col, Avatar} from "antd";
 
-export default function Upload() {
-  const cloudinary = "";
-  const destination = "";
+export default function UploadMeme() {
+  const destination = "memestest"; 
+  const cloudN = 'grupo10';
 
-  const [fileInputState, setFileInputState] = useState("");
-  const [previewSource, setPreviewSource] = useState("");
-  const [selectedFile, setSelectedFile] = useState();
-  const [successMsg, setSuccessMsg] = useState("");
+  const { Content, Footer } = Layout;
+  const [urlimage ,setUrl] = useState('');
+  const [complete, setComplete] = useState(false);
+  
+const { Option } = Select;
+const formItemLayout = {
+  labelCol: {
+    span: 6,
+  },
+  wrapperCol: {
+    span: 14,
+  },
+};
 
-  const handleFileInputChange = (e) => {
-    const file = e.target.files[0];
-    previewFile(file);
-    setSelectedFile(file);
-    setFileInputState(e.target.value);
-  };
+const showWidget = async() => {
+  let widget = window.cloudinary.openUploadWidget({
+    cloudName: cloudN,
+    uploadPreset: destination,
+    sources: ['local']
+  },
+    (error, result) => {
+      if(result.event === 'success'){
+      setUrl (result.info.secure_url);
+      setComplete(true);
+      }
+    });
+  widget.open();
+}
 
-  const previewFile = (file) => {
-    const reader = new FileReader();
-    reader.readAsDataURL(file);
-    reader.onloadend = () => {
-      setPreviewSource(reader.result);
-    };
-  };
 
-  const handleSubmitFile = (e) => {
-    const title = e.target.title.value;
-    e.preventDefault();
-    if (!selectedFile) return;
-    const reader = new FileReader();
-    reader.readAsDataURL(selectedFile);
-    reader.onloadend = () => {
-      uploadImage(reader, title);
-    };
-    reader.onerror = () => {
-      console.error("error!");
-    };
-  };
-
-  const uploadImage = async (reader, title) => {
-    try {
-      // para subir a cloudinary
-      const data = new FormData();
-      data.append("file", reader.result);
-      data.append("upload_preset", destination);
-      const res = await fetch(cloudinary, {
-        method: "POST",
-        body: data,
-      });
-      const file = await res.json();
-      const url = file.url;
-      //para subir local
-      Axios({
-        method: "POST",
-        url: "http://localhost:3001/api/v1/memes",
-        data: {
-          category: {
-            _id: "5f4aafc7b168d861769a24bb",
-            name: "soccer",
-            slug: "/soccer",
-          },
-          title: title,
-          image: JSON.stringify({ url }),
+const onFinish =  async(values) => {
+  const {title,select} = values;
+  const category = select;
+  const url = urlimage;
+  if(complete){
+  try {
+    //para subir local
+    Axios({
+      method: "POST",
+      url: `http://localhost:3001/api/v1/memes`,
+      data: {
+        category: {
+          id: "5f4aafc7b168d861769a24bb",
+          name: category,
+          slug: `/${category}`,
         },
-        headers: {
-          "Content-Type": "application/json",
-          authorization:
-            "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVmNTAyZTlhZDZkYWMzMGY5MDAyZjFmOSIsIm5hbWUiOiJQcnVlYmE2NzY3IiwibWFpbCI6Im1haWwiLCJpYXQiOjE1OTkwOTAzNDQsImV4cCI6MTU5OTM0OTU0NH0.sj9ssTi1oaPnfzQPm_5vYUkhVGkKNcEuPu_NWXhTDvo",
-        },
-      });
+        title: title,
+        image: url,
+      },
+      headers: {
+        "Content-Type": "application/json",
+        authorization:
+          `Bearer ${getToken()}`
+      },
+    });
 
-      setFileInputState("");
-      setPreviewSource("");
-      setSuccessMsg("Image uploaded ");
-    } catch (err) {
-      console.error(err);
-    }
-  };
+  } catch (err) {
+    console.error(err);
+  }
+}
+}
+
+
   return (
-    <div>
-      <h1 className="title">Upload an Meme</h1>
-      <form onSubmit={handleSubmitFile} className="form">
-        <input
-          id="title"
-          type="title"
-          name="title"
-          placeholder="ingrese titulo"
-          className="form-input"
-        />
-        <input
-          id="fileInput"
-          type="file"
-          name="image"
-          onChange={handleFileInputChange}
-          value={fileInputState}
-          className="form-input"
-        />
-        <button className="btn" type="submit">
-          Submit
-        </button>
-      </form>
-      {previewSource && (
-        <img src={previewSource} alt="chosen" style={{ height: "250px" }} />
-      )}
-    </div>
+    <>
+      <Layout>
+        <Layout>
+          <Content style={{ margin: "24px 16px 0" }}>
+            <div
+              className="site-layout-background"
+              style={{ padding: 24, minHeight: 360 }}
+            >
+              <Row>
+                <Col span={12} offset={6}>
+                  <Form name="validate_other" onFinish={onFinish}>
+                    <Form.Item>
+                      <span className="ant-form-text ">Upload Meme</span>
+                    </Form.Item>
+                    <Form.Item
+                      label="Title"
+                      name="title"
+                      rules={[
+                        { required: true, message: "Please input title!" },
+                      ]}
+                    >
+                      <Input />
+                    </Form.Item>
+                    <Form.Item
+                      name="select"
+                      label="Select Category"
+                      hasFeedback
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select category!",
+                        },
+                      ]}
+                    >
+                      <Select placeholder="Please select a category">
+                        <Option value="Soccer">Soccer</Option>
+                        <Option value="Random">Random</Option>
+                        <Option value="Programation">Programation</Option>
+                      </Select>
+                    </Form.Item>
+                    <Form.Item
+                      rules={[
+                        {
+                          required: true,
+                          message: "Please select image!",
+                        },
+                      ]}
+                    >
+                      <Button onClick={showWidget}> Upload file</Button>
+                    </Form.Item>
+                    <Form.Item>
+                      <Avatar shape="square" size={250} src={urlimage} />
+                    </Form.Item>
+                    <Form.Item
+                      wrapperCol={{
+                        span: 12,
+                        offset: 6,
+                      }}
+                    >
+                      <Button type="primary" htmlType="submit">
+                        Upload Meme
+                      </Button>
+                    </Form.Item>
+                  </Form>
+                </Col>
+              </Row>
+            </div>
+          </Content>
+          <Footer style={{ textAlign: "center" }}>MEMEREZCO</Footer>
+        </Layout>
+      </Layout>
+    </>
   );
 }
