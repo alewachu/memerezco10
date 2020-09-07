@@ -130,23 +130,22 @@ router.post('/', ensureToken, cors(), async function (req, res) {
     const comment = new Comment(query);
     let newComment;
     if (body.parent) {
-      Comment.findByIdAndUpdate(
+      await Comment.findByIdAndUpdate(
         { _id: body.parent },
         { $push: { children: query } },
-        (err, data) => {
+        async (err, data) => {
           if (err) {
             return res.status(500).json({
               success: false,
               message: 'Error 500',
             });
           }
-
           newComment = data;
         }
       );
     } else {
       // No forma parte de un hilo
-      await comment.save((err, data) => {
+      await comment.save(async (err, data) => {
         if (err) {
           return res.status(400).json({
             ok: false,
@@ -157,16 +156,16 @@ router.post('/', ensureToken, cors(), async function (req, res) {
       });
     }
 
-    Meme.findByIdAndUpdate(
+    await Meme.findByIdAndUpdate(
       { _id: query['meme']._id },
       { $inc: { comments: 1 } },
-      (err, data) => {}
+      async (err, data) => {
+        return res.status(200).json({
+          success: true,
+          data: newComment,
+        });
+      }
     );
-
-    return res.status(200).json({
-      success: true,
-      data: newComment,
-    });
   } catch (e) {
     return res.status(500).json({
       success: false,
