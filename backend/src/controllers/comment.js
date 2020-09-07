@@ -165,6 +165,7 @@ router.post('/', ensureToken, cors(), async function (req, res) {
 
     return res.status(200).json({
       success: true,
+      data: newComment,
     });
   } catch (e) {
     return res.status(500).json({
