@@ -1,74 +1,64 @@
 import React, { useState } from "react";
-import Axios from "axios";
-import { getToken } from "../helpers/authentication";
-import { Form, Select, Input, Button ,Layout,Row,Col, Avatar} from "antd";
+import { post, get } from "../helpers/service";
+import { Form, Select, Input, Button, Layout, Row, Col, Avatar } from "antd";
 
 export default function UploadMeme() {
-  const destination = ""; 
-  const cloudN = '';
+  const destination = "";
+  const cloudN = "";
 
   const { Content, Footer } = Layout;
-  const [urlimage ,setUrl] = useState('');
+  const { Option } = Select;
+
+  const [urlimage, setUrl] = useState("");
   const [complete, setComplete] = useState(false);
-  
-const { Option } = Select;
-const formItemLayout = {
-  labelCol: {
-    span: 6,
-  },
-  wrapperCol: {
-    span: 14,
-  },
-};
+  const [cat, setCat] = useState([]);
 
-const showWidget = async() => {
-  let widget = window.cloudinary.openUploadWidget({
-    cloudName: cloudN,
-    uploadPreset: destination,
-    sources: ['local']
-  },
-    (error, result) => {
-      if(result.event === 'success'){
-      setUrl (result.info.secure_url);
-      setComplete(true);
+  const getCategory = async () => {
+    const response = await get(`/api/v1/categories`);
+    setCat(response.data);
+    return response.data
+  };
+ const categories = Array.from(cat);
+
+  const showWidget = async () => {
+    let widget = window.cloudinary.openUploadWidget(
+      {
+        cloudName: cloudN,
+        uploadPreset: destination,
+        sources: ["local"],
+        showUploadMoreButton: false,
+      },
+      (error, result) => {
+        if (result.event === "success") {
+          setUrl(result.info.secure_url);
+          setComplete(true);
+        }
       }
-    });
-  widget.open();
-}
+    );
+    widget.open();
+  };
 
-
-const onFinish =  async(values) => {
-  const {title,select} = values;
-  const category = select;
-  const url = urlimage;
-  if(complete){
-  try {
-    //para subir local
-    Axios({
-      method: "POST",
-      url: `http://localhost:3001/api/v1/memes`,
-      data: {
-        category: {
-          id: "5f4aafc7b168d861769a24bb",
-          name: category,
-          slug: `/${category}`,
-        },
-        title: title,
-        image: url,
-      },
-      headers: {
-        "Content-Type": "application/json",
-        authorization:
-          `Bearer ${getToken()}`
-      },
-    });
-
-  } catch (err) {
-    console.error(err);
-  }
-}
-}
-
+  const onFinish = async (values) => {
+    const { title, select } = values; 
+    const catSelected = categories.find((category) => category.id === select);
+    const category = {
+      _id: catSelected.id,
+      name: catSelected.name,
+      slug: catSelected.Slug,
+    };
+    const url = urlimage;
+    if (complete) {
+      try {
+        post("/api/v1/memes", {
+          category: category,
+          title: title,
+          image: url,
+        });
+      } catch (err) {
+        console.error(err);
+      }
+    }
+  };
 
   return (
     <>
@@ -95,6 +85,7 @@ const onFinish =  async(values) => {
                       <Input />
                     </Form.Item>
                     <Form.Item
+                      onClick={getCategory}
                       name="select"
                       label="Select Category"
                       hasFeedback
@@ -106,12 +97,16 @@ const onFinish =  async(values) => {
                       ]}
                     >
                       <Select placeholder="Please select a category">
-                        <Option value="Soccer">Soccer</Option>
-                        <Option value="Random">Random</Option>
-                        <Option value="Programation">Programation</Option>
+                        {categories.map((item, i) => (
+                          <Option key={"categories" + i} value={item.id}>
+                            {item.name}
+                          </Option>
+                        ))}
                       </Select>
                     </Form.Item>
+
                     <Form.Item
+                    style={{ textAlign: "center" }}
                       rules={[
                         {
                           required: true,
@@ -119,9 +114,9 @@ const onFinish =  async(values) => {
                         },
                       ]}
                     >
-                      <Button onClick={showWidget}> Upload file</Button>
+                      <Button onClick={showWidget}> Upload image</Button>
                     </Form.Item>
-                    <Form.Item>
+                    <Form.Item style={{ textAlign: "center" }}>
                       <Avatar shape="square" size={250} src={urlimage} />
                     </Form.Item>
                     <Form.Item
@@ -139,7 +134,7 @@ const onFinish =  async(values) => {
               </Row>
             </div>
           </Content>
-          <Footer style={{ textAlign: "center" }}>MEMEREZCO</Footer>
+          <Footer style={{ textAlign: "center" }}>MEMEREZCO10</Footer>
         </Layout>
       </Layout>
     </>
