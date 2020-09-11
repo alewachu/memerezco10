@@ -123,7 +123,8 @@ router.post('/', ensureToken, cors(), async function (req, res) {
     if (body.parent) {
       const commentUpdated = await Comment.findByIdAndUpdate(
         { _id: body.parent },
-        { $push: { children: query } }
+        { $push: { children: query } },
+        { new: true }
       );
       if (!commentUpdated) {
         return res.status(500).json({

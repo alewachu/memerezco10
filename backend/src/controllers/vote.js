@@ -91,7 +91,7 @@ router.put('/:id', ensureToken, async function (req, res) {
         ? { upvotes: -1, downvotes: +1 }
         : { upvotes: 1, downvotes: -1 };
 
-      const memeUpdated = Meme.findByIdAndUpdate(
+      const memeUpdated = await Meme.findByIdAndUpdate(
         { _id: vote[0].meme._id },
         { $inc: queryUpdateMeme }
       );
@@ -102,7 +102,7 @@ router.put('/:id', ensureToken, async function (req, res) {
         });
       }
 
-      const queryUpdateVote = parseInt(data[0].positive)
+      const queryUpdateVote = parseInt(vote[0].positive)
         ? { positive: 0 }
         : { positive: 1 };
 

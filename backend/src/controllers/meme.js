@@ -63,15 +63,16 @@ router.get('/', async function (req, res) {
 
       for (let i = 0; i < data.length; i++) {
         const meme = data[i].toJSON();
+
         const vote = await Vote.find({
           'meme._id': meme.id,
           'user._id': user._id,
           deletedAt: null,
         });
         if (vote && vote.length > 0) {
-          if (typeof data[0].positive !== 'undefined') {
-            meme['positive'] = data[0].positive;
-            meme['idVote'] = data[0]._id;
+          if (typeof vote[0].positive !== 'undefined') {
+            meme['positive'] = vote[0].positive;
+            meme['idVote'] = vote[0]._id;
           } else {
             meme.positive = null;
           }
