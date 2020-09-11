@@ -100,7 +100,7 @@ export default function App() {
               )}
               exact
             ></Route>
-
+            
             <Route path="/Upload" exact={true}>
               <Upload className="content" />
             </Route>

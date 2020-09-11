@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import CardMeme from "../components/CardMeme/CardMeme";
 import { Card, List, Avatar, Comment, message, Form } from "antd";
 import CreateComment from "../components/CreateComment/CreateComment";
-import { commentMeme } from "../helpers/meme";
+import { commentMeme,commentParent } from "../helpers/meme";
 import { get } from "../helpers/service";
 
 export default function DetailMeme({ match }) {
@@ -25,14 +25,12 @@ export default function DetailMeme({ match }) {
   };
 
   const onClickReply = (fatherComment) => {
-    //alert(`comentando a ${fatherComment}`);
-    //await commentMeme(fatherComment,message);
-    //setCommentChildren(true);
     setCommentFather(fatherComment);
 
   };
-  const onSubmitChildrenComment = async () =>{
-    alert(`enviando comentario a comentario id ${commentFather}`);
+  const onSubmitChildrenComment = async (message) =>{
+    const memeWithCommentUpdate = await commentParent(meme, message,commentFather);
+    setMeme(memeWithCommentUpdate);
   }
   const getUrlImage = async (comment) => {
     let url;
@@ -68,7 +66,7 @@ export default function DetailMeme({ match }) {
     if (!comments || comments.length === 0) {
       return null;
     }
-    console.log(comments);
+    
     return (
       <>
         {comments.map((comment) => {
