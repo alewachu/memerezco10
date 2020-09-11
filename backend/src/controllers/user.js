@@ -1,8 +1,7 @@
 import express from 'express';
 import { getDateTimeFullBD, ensureToken } from '../helpers.js';
 import User from '../models/User';
-const bcrypt = require('bcrypt');
-
+import * as bcrypt from 'bcrypt';
 const router = express.Router();
 const cors = require('cors');
 

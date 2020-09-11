@@ -1,4 +1,4 @@
-const { Schema, model } = require('mongoose');
+import { Schema, model } from 'mongoose';
 import { getDateTimeFullBD } from '../helpers.js';
 
 const categorySchema = new Schema({
@@ -10,6 +10,7 @@ const categorySchema = new Schema({
   deletedAt: { type: Date, default: null },
 });
 
+// Módulo para eliminar underscore y _v
 categorySchema.set('toJSON', {
   transform: function (doc, schema) {
     schema.id = schema._id;

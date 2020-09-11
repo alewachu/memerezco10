@@ -1,4 +1,4 @@
-const { Schema, model, ObjectId } = require('mongoose');
+import { Schema, model } from 'mongoose';
 import { getDateTimeFullBD } from '../helpers.js';
 
 const commentSchema = new Schema({
@@ -26,21 +26,23 @@ const commentSchema = new Schema({
   deletedAt: { type: Date, default: null },
 });
 
+// Módulo para eliminar underscore y _v
 commentSchema.set('toJSON', {
   transform: function (doc, schema) {
     schema.id = schema._id;
     delete schema._id;
+    delete schema.__v;
     schema.user.id = schema.user._id;
     delete schema.user._id;
     schema.meme.id = schema.meme._id;
     delete schema.meme._id;
+    // Mapeamos para eliminar en cada comentario hijo
     schema.children.map((comment) => {
       comment.id = comment._id;
       delete comment._id;
       comment.user.id = comment.user._id;
       delete comment.user._id;
     });
-    delete schema.__v;
   },
 });
 

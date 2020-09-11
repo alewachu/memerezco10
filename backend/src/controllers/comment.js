@@ -33,41 +33,37 @@ router.get('/', async function (req, res) {
   const limit = body.limit ? parseInt(body.limit) : 5;
 
   query['deletedAt'] = null; // No busque eliminados
-  await Comment.find(query, null, { limit, skip }, (err, data) => {
-    if (err) {
-      return res.status(500).json({
-        success: false,
-        message: err,
-      });
-    }
-
-    if (data) {
-      return res.status(200).json({
-        success: true,
-        data,
-      });
-    }
-  });
+  const comments = await Comment.find(query, null, { limit, skip });
+  if (comments) {
+    return res.status(200).json({
+      success: true,
+      data: comments,
+    });
+  } else {
+    return res.status(500).json({
+      success: false,
+      message: 'Error 500',
+    });
+  }
 });
 
 router.get('/:id', async function (req, res) {
   // Try y catch ya que si no encuentra el documento, da error y entra al catch
   try {
-    await Comment.findById({ _id: req.params.id }, (err, data) => {
-      if (data) {
-        if (!data.deletedAt) {
-          return res.status(200).json({
-            success: true,
-            data,
-          });
-        } else {
-          return res.status(404).json({
-            success: false,
-            message: 'Not found',
-          });
-        }
+    const comment = await Comment.findById({ _id: req.params.id });
+    if (comment) {
+      if (!comment.deletedAt) {
+        return res.status(200).json({
+          success: true,
+          data: comment,
+        });
+      } else {
+        return res.status(404).json({
+          success: false,
+          message: 'Not found',
+        });
       }
-    });
+    }
   } catch (e) {
     return res.status(404).json({
       success: false,
@@ -87,25 +83,20 @@ router.delete('/:id', ensureToken, async function (req, res) {
   query['deletedAt'] = getDateTimeFullBD();
   // Try y catch ya que si no encuentra el documento, da error y entra al catch
   try {
-    await Comment.findByIdAndUpdate(
-      { _id },
-      query,
-      { new: true },
-      (err, data) => {
-        if (err) {
-          return res.status(500).json({
-            success: false,
-            message: 'Error 500',
-          });
-        }
-        if (data) {
-          return res.status(200).json({
-            success: true,
-            data,
-          });
-        }
-      }
-    );
+    const comment = await Comment.findByIdAndUpdate({ _id }, query, {
+      new: true,
+    });
+    if (comment) {
+      return res.status(200).json({
+        success: true,
+        data,
+      });
+    } else {
+      return res.status(500).json({
+        success: false,
+        message: 'Error 500',
+      });
+    }
   } catch (e) {
     return res.status(404).json({
       success: false,
@@ -130,42 +121,38 @@ router.post('/', ensureToken, cors(), async function (req, res) {
     const comment = new Comment(query);
     let newComment;
     if (body.parent) {
-      await Comment.findByIdAndUpdate(
+      const commentUpdated = await Comment.findByIdAndUpdate(
         { _id: body.parent },
-        { $push: { children: query } },
-        async (err, data) => {
-          if (err) {
-            return res.status(500).json({
-              success: false,
-              message: 'Error 500',
-            });
-          }
-          newComment = data;
-        }
+        { $push: { children: query } }
       );
+      if (!commentUpdated) {
+        return res.status(500).json({
+          success: false,
+          message: 'Error 500',
+        });
+      }
+      newComment = commentUpdated;
     } else {
       // No forma parte de un hilo
-      await comment.save(async (err, data) => {
-        if (err) {
-          return res.status(400).json({
-            ok: false,
-            err,
-          });
-        }
-        newComment = data;
-      });
+      const commentCreated = await comment.save();
+      if (!commentCreated) {
+        return res.status(500).json({
+          success: false,
+          message: 'Error 500',
+        });
+      }
+      newComment = commentCreated;
     }
 
     await Meme.findByIdAndUpdate(
       { _id: query['meme']._id },
-      { $inc: { comments: 1 } },
-      async (err, data) => {
-        return res.status(200).json({
-          success: true,
-          data: newComment,
-        });
-      }
+      { $inc: { comments: 1 } }
     );
+
+    return res.status(200).json({
+      success: true,
+      data: newComment,
+    });
   } catch (e) {
     return res.status(500).json({
       success: false,

@@ -53,117 +53,97 @@ router.get('/', async function (req, res) {
   }
 
   query['deletedAt'] = null; // No busque eliminados
-  let memes;
-  await Meme.find(query, null, { sort, limit, skip }, async (err, data) => {
-    if (err) {
-      return res.status(500).json({
-        success: false,
-        message: err,
-      });
-    }
-    memes = JSON.parse(JSON.stringify(data));
+  let memes = [];
+  const data = await Meme.find(query, null, { sort, limit, skip });
 
-    if (data) {
-      if (req.headers['authorization']) {
-        // Logueado
-        const user = getUserByToken(req.headers['authorization']);
-        for (let i = 0; i < memes.length; i++) {
-          const meme = memes[i];
-          await Vote.find(
-            { 'meme._id': meme.id, 'user._id': user._id, deletedAt: null },
-            async (err, data) => {
-              if (err) {
-                return res.status(500).json({
-                  success: false,
-                  message: 'Error 500',
-                });
-              }
-              if (data && data.length > 0) {
-                if (typeof data[0].positive !== 'undefined') {
-                  meme['positive'] = data[0].positive;
-                  meme['idVote'] = data[0]._id;
-                } else {
-                  meme.positive = null;
-                }
-              } else {
-                meme.positive = null;
-              }
-            }
-          );
+  if (data) {
+    if (req.headers['authorization']) {
+      // Logueado
+      const user = getUserByToken(req.headers['authorization']);
+
+      for (let i = 0; i < data.length; i++) {
+        const meme = data[i].toJSON();
+        const vote = await Vote.find({
+          'meme._id': meme.id,
+          'user._id': user._id,
+          deletedAt: null,
+        });
+        if (vote && vote.length > 0) {
+          if (typeof data[0].positive !== 'undefined') {
+            meme['positive'] = data[0].positive;
+            meme['idVote'] = data[0]._id;
+          } else {
+            meme.positive = null;
+          }
+        } else {
+          meme.positive = null;
         }
+        memes = [...memes, meme];
       }
-
-      res.status(200).json({
-        success: true,
-        data: memes,
-      });
+    } else {
+      // isnt logging
+      memes = data;
     }
-  });
+
+    res.status(200).json({
+      success: true,
+      data: memes,
+    });
+  } else {
+    return res.status(500).json({
+      success: false,
+      message: 'Error 500',
+    });
+  }
 });
 
 router.get('/:id', async function (req, res) {
   // Try y catch ya que si no encuentra el documento, da error y entra al catch
   try {
-    await Meme.findById({ _id: req.params.id }, async (err, data) => {
-      if (err) {
-        return res.status(500).json({
-          success: false,
-          message: 'Error 500',
-        });
-      }
-      if (data) {
-        if (!data.deletedAt) {
-          const meme = JSON.parse(JSON.stringify(data));
+    const meme = await Meme.findById({ _id: req.params.id });
+    const memeJson = meme.toJSON();
+    if (meme) {
+      if (!meme.deletedAt) {
+        if (req.headers['authorization']) {
+          // Logueado
+          const user = getUserByToken(req.headers['authorization']);
 
-          if (req.headers['authorization']) {
-            // Logueado
-            const user = getUserByToken(req.headers['authorization']);
-            await Vote.find(
-              { 'meme._id': meme.id, 'user._id': user._id, deletedAt: null },
-              async (err, data) => {
-                if (err) {
-                  return res.status(500).json({
-                    success: false,
-                    message: 'Error 500',
-                  });
-                }
-                if (data && data.length > 0) {
-                  if (typeof data[0].positive !== 'undefined') {
-                    meme['positive'] = data[0].positive;
-                    meme['idVote'] = data[0]._id;
-                  } else {
-                    meme.positive = null;
-                  }
-                } else {
-                  meme.positive = null;
-                }
-              }
-            );
+          const vote = await Vote.find({
+            'meme._id': meme.id,
+            'user._id': user._id,
+            deletedAt: null,
+          });
+
+          if (vote && vote.length > 0) {
+            if (typeof vote[0].positive !== 'undefined') {
+              memeJson['positive'] = vote[0].positive;
+              memeJson['idVote'] = vote[0]._id;
+            } else {
+              memeJson.positive = null;
+            }
+          } else {
+            memeJson.positive = null;
           }
+        }
 
-          await Comment.find({ 'meme._id': meme.id }, async (err, comments) => {
-            if (err) {
-              return res.status(500).json({
-                success: false,
-                message: 'Error 500',
-              });
-            }
-            if (comments && comments.length > 0) {
-              meme.allComments = comments;
-            }
-          });
-          return res.status(200).json({
-            success: true,
-            data: meme,
-          });
+        const comments = await Comment.find({ 'meme._id': meme.id });
+
+        if (comments && comments.length > 0) {
+          memeJson.allComments = comments;
         } else {
-          return res.status(404).json({
-            success: false,
-            message: 'Not found',
-          });
+          memeJson.allComments = null;
         }
       }
-    });
+      return res.status(200).json({
+        success: true,
+        data: memeJson,
+      });
+    } else {
+      return res.status(404).json({
+        success: false,
+        message: 'Not found',
+      });
+    }
   } catch (e) {
     return res.status(404).json({
       success: false,
@@ -177,27 +157,25 @@ router.put('/:id', ensureToken, async function (req, res) {
 });
 
 router.delete('/:id', ensureToken, async function (req, res) {
-  res.json({ mensaje: 'Api works' });
   const _id = req.params.id;
   let query = {};
 
   query['deletedAt'] = getDateTimeFullBD();
   // Try y catch ya que si no encuentra el documento, da error y entra al catch
   try {
-    await Meme.findByIdAndUpdate({ _id }, query, { new: true }, (err, data) => {
-      if (err) {
-        return res.status(500).json({
-          success: false,
-          message: 'Error 500',
-        });
-      }
-      if (data) {
-        return res.status(200).json({
-          success: true,
-          data,
-        });
-      }
-    });
+    const meme = await Meme.findByIdAndUpdate({ _id }, query, { new: true });
+    if (!meme) {
+      return res.status(500).json({
+        success: false,
+        message: 'Error 500',
+      });
+    }
+    if (meme) {
+      return res.status(200).json({
+        success: true,
+        data: meme,
+      });
+    }
   } catch (e) {
     return res.status(404).json({
       success: false,

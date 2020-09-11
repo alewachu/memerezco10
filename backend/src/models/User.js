@@ -1,5 +1,4 @@
-//destructuring,trae una propiedad de un objeto,en este caso una funcion
-const { Schema, model } = require('mongoose');
+import { Schema, model } from 'mongoose';
 import { getDateTimeFullBD } from '../helpers.js';
 
 const userSchema = new Schema({
@@ -14,6 +13,7 @@ const userSchema = new Schema({
   deletedAt: { type: Date, default: null },
 });
 
+// Módulo para eliminar underscore, _v y password
 userSchema.set('toJSON', {
   transform: function (doc, schema) {
     schema.id = schema._id;

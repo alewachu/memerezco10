@@ -1,4 +1,4 @@
-const { Schema, model, ObjectId } = require('mongoose');
+import { Schema, model } from 'mongoose';
 import { getDateTimeFullBD } from '../helpers.js';
 
 const memeSchema = new Schema({
@@ -25,11 +25,11 @@ memeSchema.set('toJSON', {
   transform: function (doc, schema) {
     schema.id = schema._id;
     delete schema._id;
+    delete schema.__v;
     schema.user.id = schema.user._id;
     delete schema.user._id;
     schema.category.id = schema.category._id;
     delete schema.category._id;
-    delete schema.__v;
   },
 });
 
