@@ -1,11 +1,6 @@
-import fetch from 'node-fetch';
 import moment from 'moment';
-const jwt = require('jsonwebtoken');
+import jwt from 'jsonwebtoken';
 
-export const URL_BASE = 'http://localhost:3000';
-export const getJsonByUrl = (url) => {
-  return fetch(url).then(async (response) => response.json());
-};
 // Function para verificar que exista un token, y que sea válido (middleware)
 export const ensureToken = (req, res, next) => {
   if (typeof req.headers['authorization'] !== 'undefined') {
@@ -26,7 +21,7 @@ export const getDateTimeFullBD = () => {
   // Retorna fecha para la bd con formato 2020-06-25 08:00:00
   return moment().utcOffset('-06:00').format('YYYY-MM-DD HH:mm:ss');
 };
-
+// A traves del token, decodificamos el obj user
 export const getUserByToken = (authorization) => {
   const bearer = authorization.split(' ');
   let user = {};

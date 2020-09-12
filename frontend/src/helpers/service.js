@@ -1,7 +1,6 @@
 import Axios from "axios";
 import { getToken } from "./authentication";
-
-const API_ENDPOINT = "http://localhost:3001";
+const API_ENDPOINT = process.env["REACT_APP_API_ENDPOINT"];
 const token = getToken();
 
 const config = token

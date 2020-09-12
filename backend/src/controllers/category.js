@@ -6,6 +6,7 @@ const router = express.Router();
 const cors = require('cors');
 
 router.get('/', async function (req, res) {
+  // Armamos el query según qué parámetros hay que filtrar
   const body = req.query;
   let query = {};
 
@@ -70,10 +71,12 @@ router.get('/:id', async function (req, res) {
 });
 
 router.put('/:id', ensureToken, async function (req, res) {
+  // No se usa, no está desarrollado
   res.json({ mensaje: 'Api works' });
 });
 
 router.delete('/:id', ensureToken, async function (req, res) {
+  // No se usa actualmente.
   const _id = req.params.id;
   let query = {};
 
@@ -108,6 +111,7 @@ router.delete('/:id', ensureToken, async function (req, res) {
 });
 
 router.post('/', cors(), ensureToken, async function (req, res) {
+  // No se usa actualmente
   const body = req.query;
   let query = {};
   if (body.name) {

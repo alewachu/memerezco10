@@ -7,6 +7,7 @@ const router = express.Router();
 const cors = require('cors');
 
 router.get('/', async function (req, res) {
+  // Armamos el query según qué parámetros hay que filtrar
   const body = req.query;
   let query = {};
 
@@ -73,10 +74,12 @@ router.get('/:id', async function (req, res) {
 });
 
 router.put('/:id', ensureToken, async function (req, res) {
+  // Actualizar un comentario, actualmente no está desarrollado.
   res.json({ mensaje: 'Api works' });
 });
 
 router.delete('/:id', ensureToken, async function (req, res) {
+  // Actualmente no se usa.
   const _id = req.params.id;
   let query = {};
 
@@ -106,6 +109,7 @@ router.delete('/:id', ensureToken, async function (req, res) {
 });
 
 router.post('/', ensureToken, cors(), async function (req, res) {
+  // Creamos el comentario según los parámetros
   const body = req.body;
   let query = {};
   if (body.comment) {
@@ -119,8 +123,11 @@ router.post('/', ensureToken, cors(), async function (req, res) {
   query['user'] = getUserByToken(req.headers['authorization']);
   try {
     const comment = new Comment(query);
+    // Primero 'armamos' el comentario. Luego verificamos si es un comentario padre o hijo
     let newComment;
     if (body.parent) {
+      // Es un comentario hijo. Hay que pushear el array de childrens.
+      // Retornamos el comentario padre + todos los hijos
       const commentUpdated = await Comment.findByIdAndUpdate(
         { _id: body.parent },
         { $push: { children: query } },
@@ -134,7 +141,7 @@ router.post('/', ensureToken, cors(), async function (req, res) {
       }
       newComment = commentUpdated;
     } else {
-      // No forma parte de un hilo
+      // No forma parte de un hilo. Retornamos solo ese comentario
       const commentCreated = await comment.save();
       if (!commentCreated) {
         return res.status(500).json({

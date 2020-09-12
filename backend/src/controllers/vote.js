@@ -7,6 +7,7 @@ const router = express.Router();
 const cors = require('cors');
 
 router.get('/', async function (req, res) {
+  // Armamos el query según qué parámetros hay que filtrar
   const body = req.query;
   let query = {};
 
@@ -75,6 +76,10 @@ router.get('/:id', async function (req, res) {
 });
 
 router.put('/:id', ensureToken, async function (req, res) {
+  // Ingresa acá cuando el usuario cambia si voto. Por ejemplo
+  // Había votado positivo y luego vota negativo. Incrementamos y decrementamos
+  // En las propiedades upvotes y downvotes de un meme, y hacemos un update en el vote
+
   const _id = req.params.id;
   // Try y catch ya que si no encuentra el documento, da error y entra al catch
   try {
@@ -87,6 +92,8 @@ router.put('/:id', ensureToken, async function (req, res) {
     }
 
     if (vote && vote.length > 0) {
+      // Si tuvo un voto, armamos una variable con el voto invertido para
+      // updatear las cantidades de votos en el meme
       const queryUpdateMeme = parseInt(vote[0].positive)
         ? { upvotes: -1, downvotes: +1 }
         : { upvotes: 1, downvotes: -1 };
@@ -101,7 +108,7 @@ router.put('/:id', ensureToken, async function (req, res) {
           message: 'Error 500',
         });
       }
-
+      // Lo mismo hacemos con el voto, lo actualizamos
       const queryUpdateVote = parseInt(vote[0].positive)
         ? { positive: 0 }
         : { positive: 1 };
@@ -136,12 +143,16 @@ router.put('/:id', ensureToken, async function (req, res) {
 });
 
 router.delete('/:id', ensureToken, async function (req, res) {
+  // Acá ingresa si un usuario había votado y lo deshace, por ejemplo había votado positivo
+  // y vuelve a apretar en positivo. Finalmente es como si su voto no hubiese existido
   const _id = req.params.id;
   let query = {};
 
   query['deletedAt'] = getDateTimeFullBD();
   // Try y catch ya que si no encuentra el documento, da error y entra al catch
   try {
+    // Buscamos el voto para decrementarlo, e incrementar o decrementar los votos en
+    // la colección meme.
     const vote = await Vote.findOneAndUpdate({ _id, deletedAt: null }, query, {
       new: true,
     });
@@ -181,6 +192,7 @@ router.delete('/:id', ensureToken, async function (req, res) {
 });
 
 router.post('/', ensureToken, cors(), async function (req, res) {
+  // Cuando un usuario no había votado y lo hace.
   const body = req.body;
   let query = {};
   if (body.positive !== undefined && body.positive !== null) {
@@ -191,7 +203,7 @@ router.post('/', ensureToken, cors(), async function (req, res) {
   }
 
   query['user'] = getUserByToken(req.headers['authorization']);
-
+  // Obtenemos toda la info (user,meme y tipo de voto) para buscar y crear
   if (body.meme && body.positive !== undefined && body.positive !== null) {
     try {
       const querySearchVote = {
@@ -206,6 +218,7 @@ router.post('/', ensureToken, cors(), async function (req, res) {
           err,
         });
       }
+      // Si no votó al meme, lo hacemos. Caso contrario, retornamos que ya tiene un voto este usuario.
       if (vote.length === 0) {
         const vote = new Vote(query);
         const voteCreated = await vote.save();

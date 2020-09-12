@@ -6,6 +6,7 @@ const router = express.Router();
 const cors = require('cors');
 
 router.get('/', async function (req, res) {
+  // Armamos el query según qué parámetros hay que filtrar
   const body = req.query;
   let query = {};
 
@@ -47,6 +48,7 @@ router.get('/', async function (req, res) {
 router.get('/:id', async function (req, res) {
   // Try y catch ya que si no encuentra el documento, da error y entra al catch
   try {
+    // Buscamos al user y que no esté eliminado
     await User.findById({ _id: req.params.id }, (err, data) => {
       if (data) {
         if (!data.deletedAt) {
@@ -71,6 +73,7 @@ router.get('/:id', async function (req, res) {
 });
 
 router.get('/photo/:id', async function (req, res) {
+  // Retorna solamente el string del patch de la foto del user
   // Try y catch ya que si no encuentra el documento, da error y entra al catch
   try {
     await User.findById({ _id: req.params.id }, (err, data) => {
@@ -95,6 +98,7 @@ router.get('/photo/:id', async function (req, res) {
 
 router.put('/:id', ensureToken, async function (req, res) {
   // Utiliza el middleware para verificar que pueda realizar esta accion
+  // Modulo para actualizar al user según que parámetros le enviamos. Actualmente no se usa.
   const _id = req.params.id;
   const body = req.query;
 
@@ -128,7 +132,6 @@ router.put('/:id', ensureToken, async function (req, res) {
         });
       }
       if (data) {
-        // TODO IF change name, put in other collections
         return res.status(200).json({
           success: true,
           data,
@@ -173,6 +176,7 @@ router.delete('/:id', ensureToken, async function (req, res) {
 });
 
 router.post('/', ensureToken, cors(), async function (req, res) {
+  // Armamos la query según qué parametros llegan
   const body = req.query;
   let query = {};
   if (body.name) {

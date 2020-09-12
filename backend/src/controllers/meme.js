@@ -8,6 +8,7 @@ const router = express.Router();
 const cors = require('cors');
 
 router.get('/', async function (req, res) {
+  // Armamos el query según qué parámetros hay que filtrar
   const body = req.query;
   let query = {};
 
@@ -55,15 +56,16 @@ router.get('/', async function (req, res) {
   query['deletedAt'] = null; // No busque eliminados
   let memes = [];
   const data = await Meme.find(query, null, { sort, limit, skip });
-
+  // Primero buscamos todos los memes
   if (data) {
     if (req.headers['authorization']) {
       // Logueado
       const user = getUserByToken(req.headers['authorization']);
-
+      // A cada meme le aplicamos "toJSON()" y lo asignamos a 'meme'. Esto lo hacemos porque no se puede
+      // modificar el obj retornado por mongoose originalmente.
       for (let i = 0; i < data.length; i++) {
         const meme = data[i].toJSON();
-
+        // Por cada meme buscamos si el usuario lo votó, y lo agregamos a una nueva propiedad
         const vote = await Vote.find({
           'meme._id': meme.id,
           'user._id': user._id,
@@ -79,7 +81,7 @@ router.get('/', async function (req, res) {
         } else {
           meme.positive = null;
         }
-        memes = [...memes, meme];
+        memes = [...memes, meme]; // Finalmente lo incluimos en memes.
       }
     } else {
       // isnt logging
@@ -103,12 +105,13 @@ router.get('/:id', async function (req, res) {
   try {
     const meme = await Meme.findById({ _id: req.params.id });
     const memeJson = meme.toJSON();
+    // Buscamos al meme y lo convertimos con toJSON para poder modificarlo
     if (meme) {
       if (!meme.deletedAt) {
         if (req.headers['authorization']) {
           // Logueado
           const user = getUserByToken(req.headers['authorization']);
-
+          // Realizamos la busqueda a ver si ya votó
           const vote = await Vote.find({
             'meme._id': meme.id,
             'user._id': user._id,
@@ -126,7 +129,7 @@ router.get('/:id', async function (req, res) {
             memeJson.positive = null;
           }
         }
-
+        // Buscamos todos los comentarios del meme y lo agregamos.
         const comments = await Comment.find({ 'meme._id': meme.id });
 
         if (comments && comments.length > 0) {
@@ -154,10 +157,12 @@ router.get('/:id', async function (req, res) {
 });
 
 router.put('/:id', ensureToken, async function (req, res) {
+  // Actualizar un meme. Actualmente no está desarrollado.
   res.json({ mensaje: 'Api works' });
 });
 
 router.delete('/:id', ensureToken, async function (req, res) {
+  // Eliminar un meme, actualmente no se usa.
   const _id = req.params.id;
   let query = {};
 
@@ -186,6 +191,7 @@ router.delete('/:id', ensureToken, async function (req, res) {
 });
 
 router.post('/', ensureToken, cors(), async function (req, res) {
+  // Creamos el meme según los parametros recibidos
   const body = req.body;
   let query = {};
   if (body.title) {

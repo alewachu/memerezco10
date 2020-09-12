@@ -25,7 +25,6 @@ export default function App() {
   const [userAuth, setUserAuth] = useState(false);
   const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
-
   useEffect(() => {
     if (getToken()) {
       setUserAuth(true);
@@ -59,10 +58,18 @@ export default function App() {
     }
   }
   async function register(user) {
-    const { data } = await Axios.post("/api/v1/users", user);
-    setUser(data.usuario);
-    setToken(data.token);
+    let response;
+    try {
+      const register = await post("/api/v1/register", user);
+      if (register) {
+        response = true;
+      }
+    } catch (e) {
+      response = false;
+    }
+    return response;
   }
+
   function showError(message) {
     setError(message);
   }
@@ -100,13 +107,26 @@ export default function App() {
               )}
               exact
             ></Route>
-            
+            <Route path="/register" exact={true}>
+              <Register
+                register={register}
+                envs={{
+                  REACT_APP_CLOUDINARY_DESTINATION:
+                    process.env.REACT_APP_CLOUDINARY_DESTINATION,
+                  REACT_APP_CLOUDINARY_KEY:
+                    process.env.REACT_APP_CLOUDINARY_KEY,
+                }}
+                className="content"
+              />
+            </Route>
             <Route path="/Upload" exact={true}>
               <Upload className="content" />
             </Route>
             <Route
               path="/meme/:id"
-              render={(props) => <DetailMeme {...props} userAuth={userAuth}></DetailMeme>}
+              render={(props) => (
+                <DetailMeme {...props} userAuth={userAuth}></DetailMeme>
+              )}
             ></Route>
           </Switch>
         </Content>

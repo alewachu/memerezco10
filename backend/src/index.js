@@ -1,6 +1,6 @@
 import express from 'express';
-const jwt = require('jsonwebtoken');
-const bcrypt = require('bcrypt');
+import jwt from 'jsonwebtoken';
+import * as bcrypt from 'bcrypt';
 const cors = require('cors');
 require('./connection');
 const app = express();
@@ -13,6 +13,8 @@ const NODE_ENV = process.env.NODE_ENV || 'development';
 require('dotenv').config({
   path: `.env.${NODE_ENV}`,
 });
+
+// Definimos rutas
 import categoryRoutes from './controllers/category';
 import commentRoutes from './controllers/comment';
 import memeRoutes from './controllers/meme';
@@ -35,6 +37,8 @@ app.listen(process.env.PORT_BACKEND, () => {
 });
 
 app.post('/api/v1/login', cors(), (req, res) => {
+  // Verificamos todo tipo de errores, mail o password incorrect, usuario eliminado.
+  // Para lograr una mejor respuesta para el usuario
   if (req.body && req.body.mail && req.body.password) {
     User.findOne({ mail: req.body.mail }, (err, user) => {
       if (err) {
@@ -108,6 +112,8 @@ app.post('/api/v1/register', function (req, res) {
     query['mail'] = body.mail;
   }
   if (body.password) {
+    // Usamos metodo de hasheado de bcrypt.
+    // El segundo parametro es la cantidad de "salt rounds"
     query['password'] = bcrypt.hashSync(body.password, 10);
   }
   if (body.dob) {
@@ -120,7 +126,7 @@ app.post('/api/v1/register', function (req, res) {
   const user = new User(query);
   user.save((err, user) => {
     if (err) {
-      return res.status(400).json({
+      return res.status(500).json({
         ok: false,
         err,
       });
