@@ -15,6 +15,8 @@ import { get, post, eliminate, put } from "../helpers/service";
 const { Option } = Select;
 
 export default function Home(props) {
+  const { isMobile } = props;
+
   let history = useHistory();
 
   const [data, setData] = useState([]);
@@ -55,6 +57,12 @@ export default function Home(props) {
     }
   }, []);
 
+  /**
+   * @description Busca los memes
+   *
+   * @param {*} tipe
+   * @return {*}
+   */
   const fetchDataRanking = async (tipe) => {
     const response = await get(`/api/v1/memes?limit=5&skip=${skipMemeRanking}`);
     return response.data;
@@ -161,9 +169,38 @@ export default function Home(props) {
     }
   };
 
+  const colPrincipalStyle = isMobile ? null : { display: "flex" };
+  const selectCategoryStyle = isMobile
+    ? { width: "100%", position: "fixed", marginTop: "-66px", zIndex: 2 }
+    : { width: "20%" };
+  const colMemesStyle = isMobile
+    ? {
+        width: "100%",
+        marginTop: "40px",
+        marginLeft: "5%",
+        marginRight: "auto",
+      }
+    : { width: "60%", marginTop: "40px" };
+
+  const demoInfiniteContainer = isMobile
+    ? {
+        zIndex: 2,
+        border: "1px solid #e8e8e8",
+        borderRadius: "4px",
+        overflow: "auto",
+        height: "80vh",
+        marginTop: "25px",
+      }
+    : {
+        zIndex: 2,
+        border: "1px solid #e8e8e8",
+        borderRadius: "4px",
+        overflow: "auto",
+        height: "90vh",
+      };
   return (
     <div className="col-memes">
-      <div className="demo-infinite-container">
+      <div style={demoInfiniteContainer}>
         <InfiniteScroll
           initialLoad={false}
           hasMore={!loading && hasMore}
@@ -172,8 +209,8 @@ export default function Home(props) {
           useWindow={false}
           threshold={200}
         >
-          <div style={{ display: "flex" }}>
-            <div style={{ width: "20%" }}>
+          <div style={colPrincipalStyle}>
+            <div style={selectCategoryStyle}>
               <Select
                 showSearch
                 style={{ width: "100%" }}
@@ -197,7 +234,7 @@ export default function Home(props) {
                 ))}
               </Select>
             </div>
-            <div style={{ width: "60%", marginTop: "40px" }}>
+            <div style={colMemesStyle}>
               <List
                 dataSource={data}
                 renderItem={(item, index) => (
@@ -212,36 +249,40 @@ export default function Home(props) {
                 )}
               ></List>
             </div>
-            <div
-              style={{ width: "20%", textAlign: "center", marginTop: "5px" }}
-            >
-              <div>
-                <UpCircleTwoTone
-                  onClick={() => changeTipeRankink("upvotes")}
-                  style={{ fontSize: "20px" }}
-                />
-                <big>
-                  <strong>Ranking</strong>
-                </big>
-                <DownCircleTwoTone
-                  onClick={() => changeTipeRankink("downvotes")}
-                  style={{ fontSize: "20px" }}
-                />
+            {!isMobile && (
+              <div
+                style={{ width: "20%", textAlign: "center", marginTop: "5px" }}
+              >
+                <div>
+                  <UpCircleTwoTone
+                    onClick={() => changeTipeRankink("upvotes")}
+                    style={{ fontSize: "20px" }}
+                  />
+                  <big>
+                    <strong>Ranking</strong>
+                  </big>
+                  <DownCircleTwoTone
+                    onClick={() => changeTipeRankink("downvotes")}
+                    style={{ fontSize: "20px" }}
+                  />
+                </div>
+
+                <List
+                  dataSource={memeRanking}
+                  renderItem={(memer, index) => (
+                    <List.Item key={index}>
+                      <CardMemeRanking
+                        key={memer}
+                        prop={memer}
+                        tipeRanking={tipeRanking}
+                      />
+                    </List.Item>
+                  )}
+                ></List>
               </div>
-              <List
-                dataSource={memeRanking}
-                renderItem={(memer, index) => (
-                  <List.Item key={index}>
-                    <CardMemeRanking
-                      key={memer}
-                      prop={memer}
-                      tipeRanking={tipeRanking}
-                    />
-                  </List.Item>
-                )}
-              ></List>
-            </div>
+            )}
           </div>
+
           {loading && hasMore && (
             <div className="demo-loading-container">
               <Spin />
@@ -252,23 +293,3 @@ export default function Home(props) {
     </div>
   );
 }
-
-// api/v1/votes
-// {meme: {_id: dasdsadsa}, positive: 0}
-/*
- {!isMobile && (
-        <div style={{ maxWidth: "20ch" }}>
-          {memeRanking.map((item, index) => {
-            return (
-              <div className="ranking-meme">
-                <CardMemeRanking
-                  key={item}
-                  prop={item}
-                  tipeRanking={tipeRanking}
-                />
-              </div>
-            );
-          })}
-        </div>
-      )}
-      */

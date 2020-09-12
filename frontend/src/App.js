@@ -12,12 +12,13 @@ import MenuTop from "./components/MenuTop/MenuTop";
 import MenuBottom from "./components/MenuBottom/MenuBottom";
 import MessageError from "./components/MessageError";
 // Pages
-import Login from "./Pages/Login";
-import Home from "./Pages/Home";
-import Error404 from "./Pages/Error404";
-import DetailMeme from "./Pages/DetailMeme";
-import Register from "./Pages/Register";
-import Upload from "./Pages/Upload";
+import Login from "./pages/Login";
+import Home from "./pages/Home";
+import Error404 from "./pages/Error404";
+import DetailMeme from "./pages/DetailMeme";
+import Register from "./pages/Register";
+import Upload from "./pages/Upload";
+import About from "./pages/About";
 
 export default function App() {
   const { Header, Content, Footer } = Layout;
@@ -36,7 +37,7 @@ export default function App() {
         setStateIsMobile(mobile);
       }
     });
-  }, []);
+  }, [isMobile]);
 
   async function login(email, password) {
     const data = {
@@ -119,7 +120,7 @@ export default function App() {
                 className="content"
               />
             </Route>
-            <Route path="/Upload" exact={true}>
+            <Route path="/upload" exact={true}>
               <Upload className="content" />
             </Route>
             <Route
@@ -128,6 +129,12 @@ export default function App() {
                 <DetailMeme {...props} userAuth={userAuth}></DetailMeme>
               )}
             ></Route>
+            <Route path="/about" exact={true}>
+              <About />
+            </Route>
+            <Route path="*" exact={true}>
+              <Error404 />
+            </Route>
           </Switch>
         </Content>
         {isMobile && (

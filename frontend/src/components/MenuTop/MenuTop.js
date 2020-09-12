@@ -6,9 +6,9 @@ import { MenuOutlined } from "@ant-design/icons";
 import { Drawer, List } from "antd-mobile";
 import { item } from "../../helpers/item.menu";
 import MenuItem from "antd/lib/menu/MenuItem";
-
+import Logo from "../../assets/logo.png";
 export default function MenuTop(props) {
-  const { userAuth, isMobile,logout } = props;
+  const { userAuth, isMobile, logout } = props;
   const [docker, setDocker] = useState(false);
 
   const onDock = () => {
@@ -27,13 +27,15 @@ export default function MenuTop(props) {
     </List>
   );
 
-  const handleLogout= ()=>{
+  const handleLogout = () => {
     logout();
-  }
+  };
 
   return (
     <div className="menu-top">
-      <div className="menu-top-logo">Logo</div>
+      <div className="menu-top-logo">
+        <img src={Logo} alt="Logo" style={{ width: 50, heigth: 50 }} />
+      </div>
       {isMobile && (
         <div>
           <Drawer
@@ -76,7 +78,9 @@ export default function MenuTop(props) {
           </MenuItem>
           {userAuth && (
             <MenuItem>
-              <Link onClick={handleLogout} to="#">Logout</Link>
+              <Link onClick={handleLogout} to="#">
+                Logout
+              </Link>
             </MenuItem>
           )}
           {!userAuth && (
