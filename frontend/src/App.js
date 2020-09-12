@@ -106,7 +106,7 @@ export default function App() {
             </Route>
             <Route
               path="/meme/:id"
-              render={(props) => <DetailMeme {...props}></DetailMeme>}
+              render={(props) => <DetailMeme {...props} userAuth={userAuth}></DetailMeme>}
             ></Route>
           </Switch>
         </Content>

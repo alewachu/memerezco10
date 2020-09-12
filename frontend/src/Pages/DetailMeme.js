@@ -1,15 +1,16 @@
 import React, { useState, useEffect } from "react";
 import CardMeme from "../components/CardMeme/CardMeme";
-import { Card, List, Avatar, Comment, message, Form } from "antd";
+import { Card, List, Avatar, Comment, message, Form, Modal } from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 import CreateComment from "../components/CreateComment/CreateComment";
-import { commentMeme,commentParent } from "../helpers/meme";
+import { commentMeme, commentParent } from "../helpers/meme";
 import { get } from "../helpers/service";
 
-export default function DetailMeme({ match }) {
+export default function DetailMeme({ match, userAuth, history }) {
   //se obtiene el valor de la query string
   const memeId = match.params.id;
   const [meme, setMeme] = useState(null);
-  const [commentFather,setCommentFather]= useState(null);
+  const [commentFather, setCommentFather] = useState(null);
 
   useEffect(() => {
     const getMeme = async () => {
@@ -20,18 +21,44 @@ export default function DetailMeme({ match }) {
   }, [memeId]);
 
   const onSubmitComment = async (message) => {
+    if (!userAuth) {
+      confirm();
+    }
     const memeWithCommentUpdate = await commentMeme(meme, message);
     setMeme(memeWithCommentUpdate);
   };
 
   const onClickReply = (fatherComment) => {
-    setCommentFather(fatherComment);
+    if (!userAuth) {
+      confirm();
+    }
 
+    setCommentFather(fatherComment);
   };
-  const onSubmitChildrenComment = async (message) =>{
-    const memeWithCommentUpdate = await commentParent(meme, message,commentFather);
+  const onSubmitChildrenComment = async (message) => {
+    const memeWithCommentUpdate = await commentParent(
+      meme,
+      message,
+      commentFather
+    );
     setMeme(memeWithCommentUpdate);
-  }
+  };
+  /* Muestra un modal cuando el usuario no inicio sesion y quiere comentar*/
+  const confirm = () => {
+    Modal.confirm({
+      title: "Alert",
+      icon: <ExclamationCircleOutlined />,
+      content: "You need to login to vote",
+      onOk: login,
+      okText: "Log in",
+      cancelText: "Cancel",
+    });
+  };
+
+  /* Funcion para redirigir al login*/
+  const login = () => {
+    history.push("/login");
+  };
   const getUrlImage = async (comment) => {
     let url;
     if (comment.user.id) {
@@ -66,7 +93,7 @@ export default function DetailMeme({ match }) {
     if (!comments || comments.length === 0) {
       return null;
     }
-    
+
     return (
       <>
         {comments.map((comment) => {
@@ -99,7 +126,12 @@ export default function DetailMeme({ match }) {
                   ></ChildrenComments>
                 </>
               )}
-              {comment.id == commentFather && <CreateComment show onSubmitComment={onSubmitChildrenComment}></CreateComment>}
+              {comment.id == commentFather && userAuth && (
+                <CreateComment
+                  show
+                  onSubmitComment={onSubmitChildrenComment}
+                ></CreateComment>
+              )}
             </Comment>
           );
         })}
