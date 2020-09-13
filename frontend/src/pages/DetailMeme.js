@@ -69,6 +69,12 @@ export default function DetailMeme({ match, userAuth, history }) {
     return url;
   };
 
+  if (meme?.allComments && meme.allComments.length > 0) {
+    meme.allComments.map(async (comment) => {
+      comment.urlAvatar = await getUrlImage(comment);
+    });
+  }
+
   return (
     <>
       {meme && (
@@ -88,7 +94,6 @@ export default function DetailMeme({ match, userAuth, history }) {
       )}
     </>
   );
-
   function Comments({ comments }) {
     if (!comments || comments.length === 0) {
       return null;
@@ -110,10 +115,14 @@ export default function DetailMeme({ match, userAuth, history }) {
                   </span>
                 </>,
               ]}
-              author={<a>{comment.user.name}</a>}
+              author={<label>{comment.user.name}</label>}
               avatar={
                 <Avatar
-                  src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                  src={
+                    comment.urlAvatar
+                      ? comment.urlAvatar
+                      : "https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"
+                  }
                   alt="Han Solo"
                 />
               }
@@ -126,7 +135,7 @@ export default function DetailMeme({ match, userAuth, history }) {
                   ></ChildrenComments>
                 </>
               )}
-              {comment.id == commentFather && userAuth && (
+              {comment.id === commentFather && userAuth && (
                 <CreateComment
                   show
                   onSubmitComment={onSubmitChildrenComment}

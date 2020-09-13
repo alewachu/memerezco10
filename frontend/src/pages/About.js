@@ -1,13 +1,10 @@
 import React from "react";
-import { useHistory } from "react-router-dom";
 
 import { Card, Col, Row, Image } from "antd";
 import "../App.scss";
 const { Meta } = Card;
 
 export default function About() {
-  let history = useHistory();
-
   return (
     <div>
       <Row>

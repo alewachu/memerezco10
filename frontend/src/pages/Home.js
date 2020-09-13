@@ -56,7 +56,6 @@ export default function Home(props) {
       rankingMeme();
     }
   }, []);
-
   /**
    * @description Busca los memes
    *
@@ -82,6 +81,10 @@ export default function Home(props) {
     return response.data;
   };
 
+  /**
+   *@description Modal para indicar que se tiene que logear para votar
+   *
+   */
   const confirm = () => {
     Modal.confirm({
       title: "Alert",
@@ -92,21 +95,36 @@ export default function Home(props) {
       cancelText: "Cancel",
     });
   };
+
+  /**
+   *@description Redirecciona al login
+   *
+   */
   const login = () => {
     history.push("/login");
   };
+
+  /**
+   * @description Busca mas memes para mostrar, tanto para rankin como para la lista principal
+   *
+   * @return {*}
+   */
   const handleInfiniteOnLoad = async () => {
     setLoading(true);
+
+    // Buscara un maximo de 16 memes
     if (data.length > 16) {
-      // message.warning('Infinite List loaded all');
       setLoading(false);
       setHasMore(false);
       return;
     }
+
+    // Busca los memes de una categoria
     let array = await fetchData(skip + 2, selectCategory);
     setData([...array, ...data]);
     setSkip(skip + 2);
 
+    // Busca los memes del ranking
     let arrayRanking = await fetchDataRanking();
     setMemeRanking([...arrayRanking, ...memeRanking]);
     setSkipMemeRanking(skipMemeRanking + 5);
@@ -114,8 +132,17 @@ export default function Home(props) {
     setInterval(() => {
       setLoading(false);
     }, 3000);
+    return;
   };
 
+  /**
+   *@description Controla el voto de un meme. Si no esta logeado llama la funcion que abre un modal
+   *  Si no habia votado hace post, si el voto es contrario al votado actualiza el voto y si presiona en el mismo voto lo elimina
+   * @param {*} tipo
+   * @param {*} meme
+   * @param {*} voto
+   * @param {*} positive
+   */
   const voteMeme = (tipo, meme, voto, positive) => {
     if (getToken()) {
       if (voto) {
@@ -135,6 +162,11 @@ export default function Home(props) {
     }
   };
 
+  /**
+   *@description Si selecciono una categoria busca los memes de ese tipo. En caso que seleccione la misma categoria no hace la busqueda
+   *
+   * @param {*} value
+   */
   const onChange = async (value) => {
     if (selectCategory !== value) {
       value = value ? value : null;

@@ -1,7 +1,7 @@
 import React from "react";
 import { useHistory } from "react-router-dom";
 import "./CardMeme.scss";
-import { Card, Avatar, Comment } from "antd";
+import { Card, Avatar, Comment, Image } from "antd";
 import {
   DownCircleOutlined,
   UpCircleOutlined,
@@ -40,7 +40,7 @@ export default function CardMeme(props) {
           />
         }
         extra={<h2 onClick={() => viewMeme(id)}>{title}</h2>}
-        cover={<img alt="example" src={image} onClick={() => viewMeme(id)} />}
+        cover={<Image alt="example" src={image} onClick={() => viewMeme(id)} />}
         actions={[
           <>
             {positive === 1 && (
