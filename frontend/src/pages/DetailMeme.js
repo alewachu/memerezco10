@@ -78,17 +78,16 @@ export default function DetailMeme({ match, userAuth, history }) {
   return (
     <>
       {meme && (
-        <div style={{ marginLeft: "25%", marginRight: "25%" }}>
+        <div className="container-content">
           <CardMeme prop={meme}></CardMeme>
-          <Card>
+          <Card className="container-comment">
             <Comments comments={meme.allComments}></Comments>
-          </Card>
-
-          <Card>
-            <CreateComment
-              show={true}
-              onSubmitComment={onSubmitComment}
-            ></CreateComment>
+            <div>
+              <CreateComment
+                show={true}
+                onSubmitComment={onSubmitComment}
+              ></CreateComment>
+            </div>
           </Card>
         </div>
       )}

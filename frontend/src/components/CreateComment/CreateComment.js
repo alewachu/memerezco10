@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import "./CreateComment.scss";
 export default function CreateComment({ onSubmitComment,show }) {
   const [message, setMessage] = useState("");
   const [sendingComment,setSendingComment] = useState(false);
@@ -26,13 +26,14 @@ export default function CreateComment({ onSubmitComment,show }) {
     <>
       {show && (
         <form onSubmit={handleSubmit}>
-          <input
+          <textarea
+            className="input"
             onChange={(e) => setMessage(e.target.value)}
             placeholder="Escribe un comentario..."
             value={message}
             required
-          ></input>
-          <button type="submit">Comentar</button>
+          ></textarea>
+          <button className="button" type="submit">Comentar</button>
         </form>
       )}
     </>
