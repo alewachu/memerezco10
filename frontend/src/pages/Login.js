@@ -1,8 +1,15 @@
 import React from "react";
 import { Form, Input, Button, Checkbox, Row, Col, Layout } from "antd";
-import {deleteToken} from "../helpers/authentication";
+import { Link } from "react-router-dom";
+import { deleteToken } from "../helpers/authentication";
 
-export default function Login({ login, history, showError, userAuth,setUserAuth }) {
+export default function Login({
+  login,
+  history,
+  showError,
+  userAuth,
+  setUserAuth,
+}) {
   const { Content, Footer } = Layout;
 
   const onFinish = async (values) => {
@@ -28,7 +35,6 @@ export default function Login({ login, history, showError, userAuth,setUserAuth 
                       name="basic"
                       initialValues={{ remember: true }}
                       onFinish={onFinish}
-                      
                     >
                       <Form.Item
                         label="Email"
@@ -60,11 +66,26 @@ export default function Login({ login, history, showError, userAuth,setUserAuth 
                         <Checkbox>Remember me</Checkbox>
                       </Form.Item>
 
-                      <Form.Item>
-                        <Button type="primary" htmlType="submit">
-                          Iniciar Sesión
-                        </Button>
-                      </Form.Item>
+                      <Row>
+                        <Col span={12}>
+                          {" "}
+                          <Form.Item>
+                            <Button type="primary" htmlType="submit">
+                              Login
+                            </Button>
+                          </Form.Item>
+                        </Col>
+                        <Col span={12}>
+                          {" "}
+                          <Form.Item>
+                            <Button type="ghost">
+                              <Link to="/register">
+                                I already have an account
+                              </Link>{" "}
+                            </Button>
+                          </Form.Item>
+                        </Col>
+                      </Row>
                     </Form>
                   </Col>
                 </Row>
@@ -79,7 +100,5 @@ export default function Login({ login, history, showError, userAuth,setUserAuth 
     setUserAuth(false);
     deleteToken();
     return null;
-    
-    
   }
 }
