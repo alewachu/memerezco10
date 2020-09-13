@@ -1,25 +1,46 @@
 import React, { useState } from "react";
-import { post, get } from "../helpers/service";
-import { Form, Select, Input, Button, Layout, Row, Col, Avatar } from "antd";
+import {
+  Form,
+  Select,
+  Input,
+  Button,
+  Layout,
+  Row,
+  Col,
+  Avatar,
+  Modal,
+} from "antd";
+import { ExclamationCircleOutlined } from "@ant-design/icons";
 
-export default function UploadMeme() {
-  const destination = "";
-  const cloudN = "";
+import { post, get } from "../helpers/service";
+import { useHistory } from "react-router-dom";
+
+export default function UploadMeme(props) {
+  const destination = props.envs["REACT_APP_CLOUDINARY_DESTINATION"];
+  const cloudN = props.envs["REACT_APP_CLOUDINARY_KEY"];
 
   const { Content, Footer } = Layout;
   const { Option } = Select;
+  let history = useHistory();
 
   const [urlimage, setUrl] = useState("");
   const [complete, setComplete] = useState(false);
   const [cat, setCat] = useState([]);
 
+  /**
+   * Obtenemos el listado de las categorias
+   */
   const getCategory = async () => {
     const response = await get(`/api/v1/categories`);
     setCat(response.data);
-    return response.data
+    return response.data;
   };
- const categories = Array.from(cat);
+  const categories = Array.from(cat);
 
+
+  /**
+   * creamos y abrimos el widget de cloudinary
+   */
   const showWidget = async () => {
     let widget = window.cloudinary.openUploadWidget(
       {
@@ -38,8 +59,42 @@ export default function UploadMeme() {
     widget.open();
   };
 
-  const onFinish = async (values) => {
-    const { title, select } = values; 
+  /**
+   * se confirma si los datos se subieron correctamente
+   * o informa un error
+   */
+  const confirm = (type) => {
+    switch (type) {
+      case 1: // Confirm upload
+        Modal.info({
+          title: "Congrulations meme upload!",
+          content: <div></div>,
+          onOk: home,
+        });
+        break;
+      case 2: // Error
+        Modal.confirm({
+          title: "Alert",
+          icon: <ExclamationCircleOutlined />,
+          content: "Error in upload ",
+          okText: "Retry",
+          cancelText: "Cancel",
+        });
+        break;
+      default:
+        break;
+    }
+  };
+  const home = () => {
+    history.push("/");
+  };
+
+/**
+ * una vez cargados los datos
+ * se envian al servidor
+ */
+const onFinish = async (values) => {
+    const { title, select } = values;
     const catSelected = categories.find((category) => category.id === select);
     const category = {
       _id: catSelected.id,
@@ -54,8 +109,9 @@ export default function UploadMeme() {
           title: title,
           image: url,
         });
+        confirm(1);
       } catch (err) {
-        console.error(err);
+        confirm(2);
       }
     }
   };
@@ -106,7 +162,7 @@ export default function UploadMeme() {
                     </Form.Item>
 
                     <Form.Item
-                    style={{ textAlign: "center" }}
+                      style={{ textAlign: "center" }}
                       rules={[
                         {
                           required: true,

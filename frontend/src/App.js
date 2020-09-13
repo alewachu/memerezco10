@@ -120,7 +120,13 @@ export default function App() {
               />
             </Route>
             <Route path="/upload" exact={true}>
-              <Upload className="content" />
+              <Upload 
+              envs={{
+                  REACT_APP_CLOUDINARY_DESTINATION:
+                    process.env.REACT_APP_CLOUDINARY_DESTINATION,
+                  REACT_APP_CLOUDINARY_KEY:
+                    process.env.REACT_APP_CLOUDINARY_KEY,
+                }} className="content" />
             </Route>
             <Route
               path="/meme/:id"
