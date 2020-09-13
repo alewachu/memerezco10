@@ -7,7 +7,7 @@ import {
   Layout,
   Row,
   Col,
-  Avatar,
+  Image,
   Modal,
 } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
@@ -173,7 +173,7 @@ const onFinish = async (values) => {
                       <Button onClick={showWidget}> Upload image</Button>
                     </Form.Item>
                     <Form.Item style={{ textAlign: "center" }}>
-                      <Avatar shape="square" size={250} src={urlimage} />
+                       <Image  src={urlimage} />
                     </Form.Item>
                     <Form.Item
                       wrapperCol={{

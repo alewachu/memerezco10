@@ -4,7 +4,7 @@ import {
   Input,
   Button,
   DatePicker,
-  Avatar,
+  Image,
   Row,
   Col,
   Layout,
@@ -205,7 +205,7 @@ export default function Register(props) {
                       <Button onClick={showWidget}> Upload image</Button>
                     </Form.Item>
                     <Form.Item style={{ textAlign: "center" }}>
-                      <Avatar shape="square" size={250} src={image} />
+                     <Image  src={urlimage} />
                     </Form.Item>
                     <Form.Item>
                       <Button type="primary" htmlType="submit">
