@@ -34,7 +34,9 @@ export default function MenuTop(props) {
   return (
     <div className="menu-top">
       <div className="menu-top-logo">
-        <img src={Logo} alt="Logo" style={{ width: 50, heigth: 50 }} />
+        <Link to="/">
+          <img src={Logo} alt="Logo" style={{ width: 50, heigth: 50 }} />
+        </Link>
       </div>
       {isMobile && (
         <div>

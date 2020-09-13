@@ -73,7 +73,6 @@ export default function Home(props) {
     if (category) {
       url = url + `&category=${category}`;
     }
-    console.log(url);
     const response = await get(url);
     return response.data;
   };
@@ -143,20 +142,7 @@ export default function Home(props) {
       setData(array);
       setSkip(2);
       setSelectCategory(value);
-      console.log(`selected ${value}`);
     }
-  };
-
-  const onBlur = () => {
-    console.log("blur");
-  };
-
-  const onFocus = () => {
-    console.log("focus");
-  };
-
-  const onSearch = (val) => {
-    console.log("search:", val);
   };
 
   const changeTipeRankink = async (tipe) => {
@@ -217,16 +203,13 @@ export default function Home(props) {
                 placeholder="Categorias"
                 optionFilterProp="children"
                 onChange={onChange}
-                onFocus={onFocus}
-                onBlur={onBlur}
-                onSearch={onSearch}
                 defaultValue=""
                 filterOption={(input, option) =>
                   option.children.toLowerCase().indexOf(input.toLowerCase()) >=
                   0
                 }
               >
-                <Option value="">Todos</Option>
+                <Option value="">All</Option>
                 {categories.map((category) => (
                   <Option value={category.id} key={category.key}>
                     {category.name}
@@ -272,7 +255,7 @@ export default function Home(props) {
                   renderItem={(memer, index) => (
                     <List.Item key={index}>
                       <CardMemeRanking
-                        key={memer}
+                        key={memer.id}
                         prop={memer}
                         tipeRanking={tipeRanking}
                       />

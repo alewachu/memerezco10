@@ -5,7 +5,6 @@ import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { setToken, getToken, deleteToken } from "./helpers/authentication";
 import { post } from "./helpers/service";
 import "./App.scss";
-import Axios from "axios";
 // Menu top
 import MenuTop from "./components/MenuTop/MenuTop";
 // Menu bottom
@@ -146,37 +145,3 @@ export default function App() {
     </Layout>
   );
 }
-//Rutas usuario logueado
-/*function RoutedAuthenticatedUser({ isMobile }) {
-  return (
-    <Switch>
-      <Route path="/" exact={true}>
-        <Home className="content" isMobile={isMobile} />
-      </Route>
-    </Switch>
-  );
-}
-//Rutas usuario deslogueado
-function DeauthenticatedUser({ login, register, showError }) {
-  return (
-    <Switch>
-      <Route
-        path="/login"
-        render={(props) => (
-          <Login {...props} login={login} showError={showError} default></Login>
-        )}
-        exact
-      ></Route>
-      <Route
-        path="/register"
-        render={(props) => (
-          <Register
-            {...props}
-            register={register}
-            showError={showError}
-          ></Register>
-        )}
-      ></Route>
-    </Switch>
-  );
-}*/
