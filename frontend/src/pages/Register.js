@@ -9,13 +9,14 @@ import {
   Col,
   Layout,
   Modal,
+  message,
 } from "antd";
 import { useHistory } from "react-router-dom";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 
 export default function Register(props) {
   const { Content, Footer } = Layout;
-  let history = useHistory();
+  const history = useHistory();
 
   const destination = props.envs["REACT_APP_CLOUDINARY_DESTINATION"];
   const cloudN = props.envs["REACT_APP_CLOUDINARY_KEY"];
@@ -38,6 +39,8 @@ export default function Register(props) {
       } else {
         confirm(2);
       }
+    } else {
+      confirm(3);
     }
   };
 
@@ -64,6 +67,8 @@ export default function Register(props) {
           cancelText: "Cancel",
         });
         break;
+      case 3: // Error image required
+        message.error("Please input your image", 6);
       default:
         break;
     }
@@ -126,7 +131,7 @@ export default function Register(props) {
                         },
                       ]}
                     >
-                      <Input className="input-login" />
+                      <Input autoComplete="off" className="input-login" />
                     </Form.Item>
                     <Form.Item
                       label="Name"
@@ -138,7 +143,7 @@ export default function Register(props) {
                         },
                       ]}
                     >
-                      <Input className="input-login" />
+                      <Input autoComplete="off" className="input-login" />
                     </Form.Item>
                     <Form.Item
                       className="input-login"
@@ -146,7 +151,8 @@ export default function Register(props) {
                       name="dob"
                       rules={[
                         {
-                          required: false,
+                          type: "object",
+                          required: true,
                           message: "Please input your dob!",
                         },
                       ]}
@@ -164,7 +170,7 @@ export default function Register(props) {
                         },
                       ]}
                     >
-                      <Input.Password />
+                      <Input.Password autoComplete="off" />
                     </Form.Item>
                     <Form.Item
                       label="Repeat password"
@@ -188,19 +194,13 @@ export default function Register(props) {
                         }),
                       ]}
                     >
-                      <Input.Password />
+                      <Input.Password autoComplete="off" />
                     </Form.Item>
                     <Form.Item
                       label="Image"
                       name="image"
                       hasFeedback
                       style={{ textAlign: "center" }}
-                      rules={[
-                        {
-                          required: false,
-                          message: "Please input your image!",
-                        },
-                      ]}
                     >
                       <Button onClick={showWidget}> Upload image</Button>
                     </Form.Item>
