@@ -22,11 +22,11 @@ export const post = async (url, data) => {
 };
 
 export const put = async (url, id, data) => {
-  const response = await Axios.put(API_ENDPOINT + url + `/${id}`, data, config);
+  const response = await Axios.put(`${API_ENDPOINT}${url}/${id}`, data, config);
   return response.data;
 };
 
 export const eliminate = async (url, id) => {
-  const response = await Axios.delete(API_ENDPOINT + url + `/${id}`, config);
+  const response = await Axios.delete(`${API_ENDPOINT}${url}/${id}`, config);
   return response.data;
 };

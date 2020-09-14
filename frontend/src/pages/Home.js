@@ -55,7 +55,7 @@ export default function Home(props) {
     if (memeRanking.length === 0) {
       rankingMeme();
     }
-  }, []);
+  }, [categories, data, memeRanking, skipMemeRanking, tipeRanking]);
   /**
    * @description Busca los memes
    *
@@ -241,9 +241,11 @@ export default function Home(props) {
                   0
                 }
               >
-                <Option value="">All</Option>
+                <Option value="" key="all">
+                  All
+                </Option>
                 {categories.map((category) => (
-                  <Option value={category.id} key={category.key}>
+                  <Option value={category.id} key={category.id}>
                     {category.name}
                   </Option>
                 ))}
@@ -255,7 +257,6 @@ export default function Home(props) {
                 renderItem={(item, index) => (
                   <List.Item key={index} style={{ padding: "0px" }}>
                     <CardMeme
-                      key={index}
                       prop={item}
                       voteMeme={voteMeme}
                       style={{ marginLeft: "10%", marginRight: "10%" }}
@@ -285,12 +286,8 @@ export default function Home(props) {
                 <List
                   dataSource={memeRanking}
                   renderItem={(memer, index) => (
-                    <List.Item key={index}>
-                      <CardMemeRanking
-                        key={memer.id}
-                        prop={memer}
-                        tipeRanking={tipeRanking}
-                      />
+                    <List.Item key={memer.id}>
+                      <CardMemeRanking prop={memer} tipeRanking={tipeRanking} />
                     </List.Item>
                   )}
                 ></List>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import CardMeme from "../components/CardMeme/CardMeme";
-import { Card, List, Avatar, Comment, message, Form, Modal } from "antd";
+import { Card, Avatar, Comment, Modal } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import CreateComment from "../components/CreateComment/CreateComment";
 import { commentMeme, commentParent } from "../helpers/meme";
@@ -150,8 +150,9 @@ export default function DetailMeme({ match, userAuth, history }) {
     return childrenComments.map((comment) => {
       return (
         <Comment
+          key={comment.id}
           content={<p>{comment.comment}</p>}
-          author={<a>{comment.user.name}</a>}
+          author={<label>{comment.user.name}</label>}
           avatar={
             <Avatar
               src="https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png"

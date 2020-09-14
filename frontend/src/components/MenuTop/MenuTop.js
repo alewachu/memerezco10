@@ -80,6 +80,11 @@ export default function MenuTop(props) {
           </MenuItem>
           {userAuth && (
             <MenuItem>
+              <Link to="/upload">Upload meme</Link>
+            </MenuItem>
+          )}
+          {userAuth && (
+            <MenuItem>
               <Link onClick={handleLogout} to="#">
                 Logout
               </Link>

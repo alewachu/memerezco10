@@ -69,6 +69,7 @@ export default function Register(props) {
         break;
       case 3: // Error image required
         message.error("Please input your image", 6);
+        break;
       default:
         break;
     }
@@ -81,10 +82,6 @@ export default function Register(props) {
   };
   const onChange = (date, dateString) => {
     setDob(dateString);
-  };
-
-  const onFinishFailed = (errorInfo) => {
-    console.log("Failed:", errorInfo);
   };
 
   const showWidget = async () => {
@@ -205,7 +202,7 @@ export default function Register(props) {
                       <Button onClick={showWidget}> Upload image</Button>
                     </Form.Item>
                     <Form.Item style={{ textAlign: "center" }}>
-                     <Image  src={image} />
+                      <Image src={image} />
                     </Form.Item>
                     <Form.Item>
                       <Button type="primary" htmlType="submit">

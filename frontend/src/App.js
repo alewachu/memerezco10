@@ -4,7 +4,7 @@ import { Layout } from "antd";
 import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
 import { setToken, getToken, deleteToken } from "./helpers/authentication";
 import { post } from "./helpers/service";
-import "./App.scss";
+
 // Menu top
 import MenuTop from "./components/MenuTop/MenuTop";
 // Menu bottom
@@ -19,11 +19,13 @@ import Register from "./pages/Register";
 import Upload from "./pages/Upload";
 import About from "./pages/About";
 
+import "./App.scss";
+
 export default function App() {
   const { Header, Content, Footer } = Layout;
   const [isMobile, setStateIsMobile] = useState(false);
   const [userAuth, setUserAuth] = useState(false);
-  const [user, setUser] = useState(null);
+  const [setUser] = useState(null);
   const [error, setError] = useState(null);
   useEffect(() => {
     if (getToken()) {
@@ -36,28 +38,43 @@ export default function App() {
         setStateIsMobile(mobile);
       }
     });
-  }, [isMobile]);
+  }, [isMobile, userAuth]);
 
-  async function login(email, password) {
+  /**
+   * @description Envia las credenciales para iniciar sesion
+   *
+   * @param {*} email
+   * @param {*} password
+   * @return {*}
+   */
+  const login = async (email, password) => {
     const data = {
       mail: email,
       password: password,
     };
 
     const resp = await post("/api/v1/login", data);
-    //if(resp)
+
     if (resp.success) {
+      // En caso de que la respuesta sea cierta seteamos los datos
       setUserAuth(true);
-      //Se guarda en sessionStorage
       setToken(resp.token);
       setUser(resp.user);
       setError(null);
-      window.location.replace("/");
     } else {
+      // En caso que la respuesta sea falsa seteamos el error
       setError(resp.err.message);
     }
-  }
-  async function register(user) {
+    return resp.success;
+  };
+
+  /**
+   * @description Envia los datos para crear un usuario nuevo
+   *
+   * @param {*} user
+   * @return {*}
+   */
+  const register = async (user) => {
     let response;
     try {
       const register = await post("/api/v1/register", user);
@@ -68,20 +85,27 @@ export default function App() {
       response = false;
     }
     return response;
-  }
+  };
 
-  function showError(message) {
+  /**
+   *@description Setea el mensaje de error
+   *
+   * @param {*} message
+   */
+  const showError = (message) => {
     setError(message);
-  }
+  };
 
-  function hiddenError() {
-    setUser(null);
-  }
+  /**
+   *@description Elimina las credenciales
+   *
+   */
   const logout = () => {
     deleteToken();
     setUserAuth(false);
     setUser(null);
   };
+
   return (
     <Layout>
       <Router>
@@ -120,13 +144,15 @@ export default function App() {
               />
             </Route>
             <Route path="/upload" exact={true}>
-              <Upload 
-              envs={{
+              <Upload
+                envs={{
                   REACT_APP_CLOUDINARY_DESTINATION:
                     process.env.REACT_APP_CLOUDINARY_DESTINATION,
                   REACT_APP_CLOUDINARY_KEY:
                     process.env.REACT_APP_CLOUDINARY_KEY,
-                }} className="content" />
+                }}
+                className="content"
+              />
             </Route>
             <Route
               path="/meme/:id"
