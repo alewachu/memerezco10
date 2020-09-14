@@ -1,8 +1,8 @@
-import { post,get } from "./service";
+import { post, get } from "./service";
 export const commentMeme = async (meme, message) => {
   const entryComment = {
     meme: meme.id,
-    comment:message
+    comment: message,
   };
   const { data: newComment } = await post(`/api/v1/comments`, entryComment);
   const memeWithCommentsUpdate = {
@@ -14,27 +14,24 @@ export const commentMeme = async (meme, message) => {
   return memeWithCommentsUpdate;
 };
 
-export const commentParent = async (meme,message,parent) =>{
+export const commentParent = async (meme, message, parent) => {
   const comment = {
     meme: meme.id,
     comment: message,
-    parent:parent
+    parent: parent,
   };
   const { data: newComment } = await post(`/api/v1/comments`, comment);
-  if(newComment){
-    const updatedMeme= await getMemeApi(meme.id);
+  if (newComment) {
+    const updatedMeme = await getMemeApi(meme.id);
     return updatedMeme;
   }
   return null;
+};
 
-}
-
-export const getMemeApi=async(memeId)=>{
+export const getMemeApi = async (memeId) => {
   const response = await get(`/api/v1/memes/${memeId}`);
-   return response.data;
-  
-
-}
+  return response.data;
+};
 
 /*function searchCommentFather(meme,id){
  const commentFather= meme.allComments.find(c=>c.id==id);

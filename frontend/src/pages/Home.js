@@ -121,12 +121,12 @@ export default function Home(props) {
 
     // Busca los memes de una categoria
     let array = await fetchData(skip + 2, selectCategory);
-    setData([...array, ...data]);
+    setData([...data, ...array]);
     setSkip(skip + 2);
 
     // Busca los memes del ranking
     let arrayRanking = await fetchDataRanking();
-    setMemeRanking([...arrayRanking, ...memeRanking]);
+    setMemeRanking([...memeRanking, ...arrayRanking]);
     setSkipMemeRanking(skipMemeRanking + 5);
 
     setInterval(() => {

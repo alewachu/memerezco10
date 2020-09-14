@@ -4,7 +4,8 @@ import { Card, Avatar, Comment, Modal } from "antd";
 import { ExclamationCircleOutlined } from "@ant-design/icons";
 import CreateComment from "../components/CreateComment/CreateComment";
 import { commentMeme, commentParent } from "../helpers/meme";
-import { get } from "../helpers/service";
+import { get, post, eliminate, put } from "../helpers/service";
+import { getToken } from "../helpers/authentication";
 
 export default function DetailMeme({ match, userAuth, history }) {
   //se obtiene el valor de la query string
@@ -56,7 +57,32 @@ export default function DetailMeme({ match, userAuth, history }) {
       cancelText: "Cancel",
     });
   };
-
+  /**
+   *@description Controla el voto de un meme. Si no esta logeado llama la funcion que abre un modal
+   *  Si no habia votado hace post, si el voto es contrario al votado actualiza el voto y si presiona en el mismo voto lo elimina
+   * @param {*} tipo
+   * @param {*} meme
+   * @param {*} voto
+   * @param {*} positive
+   */
+  const voteMeme = (tipo, meme, voto, positive) => {
+    if (getToken()) {
+      if (voto) {
+        if (tipo === positive) {
+          eliminate("/api/v1/votes", voto);
+        } else {
+          put("/api/v1/votes", voto);
+        }
+      } else {
+        post("/api/v1/votes", {
+          meme,
+          positive: tipo,
+        });
+      }
+    } else {
+      confirm();
+    }
+  };
   /* Funcion para redirigir al login*/
   const login = () => {
     history.push("/login");
@@ -81,7 +107,7 @@ export default function DetailMeme({ match, userAuth, history }) {
     <>
       {meme && (
         <div className="container-content">
-          <CardMeme prop={meme}></CardMeme>
+          <CardMeme prop={meme} voteMeme={voteMeme}></CardMeme>
           <Card className="container-comment">
             <Comments comments={meme.allComments}></Comments>
             <div>
