@@ -23,6 +23,7 @@ export default function DetailMeme({ match, userAuth, history }) {
   const onSubmitComment = async (message) => {
     if (!userAuth) {
       confirm();
+      return;
     }
     const memeWithCommentUpdate = await commentMeme(meme, message);
     setMeme(memeWithCommentUpdate);
@@ -31,6 +32,7 @@ export default function DetailMeme({ match, userAuth, history }) {
   const onClickReply = (fatherComment) => {
     if (!userAuth) {
       confirm();
+      return;
     }
 
     setCommentFather(fatherComment);
