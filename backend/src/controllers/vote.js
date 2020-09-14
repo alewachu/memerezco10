@@ -156,6 +156,8 @@ router.delete('/:id', ensureToken, async function (req, res) {
     const vote = await Vote.findOneAndUpdate({ _id, deletedAt: null }, query, {
       new: true,
     });
+    console.log('vote original');
+    console.log(vote);
     if (!vote) {
       return res.status(500).json({
         success: false,
@@ -169,8 +171,7 @@ router.delete('/:id', ensureToken, async function (req, res) {
 
       const memeUpdated = await Meme.findByIdAndUpdate(
         { _id: vote.meme._id },
-        { $inc: queryUpdateMeme },
-        (err, memeUpdated) => {}
+        { $inc: queryUpdateMeme }
       );
 
       return res.status(200).json({
