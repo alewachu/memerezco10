@@ -53,7 +53,7 @@ export default function App() {
       password: password,
     };
 
-    const resp = await post("/api/v1/login", data);
+    const resp = await post("/auth/login", data);
 
     if (resp.success) {
       // En caso de que la respuesta sea cierta seteamos los datos
@@ -77,7 +77,7 @@ export default function App() {
   const register = async (user) => {
     let response;
     try {
-      const register = await post("/api/v1/register", user);
+      const register = await post("/auth/register", user);
       if (register) {
         response = true;
       }
