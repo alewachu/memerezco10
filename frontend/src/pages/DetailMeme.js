@@ -102,7 +102,6 @@ export default function DetailMeme({ match, userAuth, history }) {
       comment.urlAvatar = await getUrlImage(comment);
     });
   }
-
   return (
     <>
       {meme && (
