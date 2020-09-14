@@ -156,8 +156,6 @@ router.delete('/:id', ensureToken, async function (req, res) {
     const vote = await Vote.findOneAndUpdate({ _id, deletedAt: null }, query, {
       new: true,
     });
-    console.log('vote original');
-    console.log(vote);
     if (!vote) {
       return res.status(500).json({
         success: false,
