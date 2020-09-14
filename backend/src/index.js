@@ -1,6 +1,4 @@
 import express from 'express';
-import jwt from 'jsonwebtoken';
-import * as bcrypt from 'bcrypt';
 const cors = require('cors');
 require('./connection');
 const app = express();
@@ -15,13 +13,14 @@ require('dotenv').config({
 });
 
 // Definimos rutas
+import authRoutes from './controllers/auth';
 import categoryRoutes from './controllers/category';
 import commentRoutes from './controllers/comment';
 import memeRoutes from './controllers/meme';
 import userRoutes from './controllers/user';
 import voteRoutes from './controllers/vote';
 import User from './models/User';
-
+app.use('/auth', authRoutes);
 app.use('/api/v1/categories', categoryRoutes);
 app.use('/api/v1/comments', commentRoutes);
 app.use('/api/v1/memes', memeRoutes);
@@ -34,105 +33,4 @@ app.get('/', async function (req, res) {
 
 app.listen(process.env.PORT_BACKEND, () => {
   console.log(`Server en port ${process.env.PORT_BACKEND}`);
-});
-
-app.post('/api/v1/login', cors(), (req, res) => {
-  // Verificamos todo tipo de errores, mail o password incorrect, usuario eliminado.
-  // Para lograr una mejor respuesta para el usuario
-  if (req.body && req.body.mail && req.body.password) {
-    User.findOne({ mail: req.body.mail }, (err, user) => {
-      if (err) {
-        return res.status(500).json({
-          success: false,
-          message: err,
-        });
-      }
-
-      if (!user) {
-        return res.status(200).json({
-          ok: false,
-          err: {
-            success: false,
-            message: 'mail incorrect',
-          },
-        });
-      }
-
-      if (user.deletedAt) {
-        return res.status(200).json({
-          ok: false,
-          err: {
-            success: false,
-            message: 'user deleted',
-          },
-        });
-      }
-
-      if (!bcrypt.compareSync(req.body.password, user.password)) {
-        return res.status(200).json({
-          ok: false,
-          err: {
-            success: false,
-            message: 'password failed',
-          },
-        });
-      }
-
-      const token = jwt.sign(
-        { id: user._id, name: user.name, mail: user.mail },
-        process.env.JWT_SECRET_KEY,
-        {
-          expiresIn: process.env.EXPIRES_TOKEN,
-        }
-      );
-      res.json({
-        success: true,
-        user: { name: user.name, mail: user.mail, id: user._id },
-        token,
-      });
-    });
-  } else {
-    return res.status(200).json({
-      ok: false,
-      err: {
-        success: false,
-        message: 'insufficient data',
-      },
-    });
-  }
-});
-
-app.post('/api/v1/register', function (req, res) {
-  const body = req.body;
-  let query = {};
-  if (body.name) {
-    query['name'] = body.name;
-  }
-  if (body.mail) {
-    query['mail'] = body.mail;
-  }
-  if (body.password) {
-    // Usamos metodo de hasheado de bcrypt.
-    // El segundo parametro es la cantidad de "salt rounds"
-    query['password'] = bcrypt.hashSync(body.password, 10);
-  }
-  if (body.dob) {
-    query['dob'] = body.dob;
-  }
-  if (body.image) {
-    query['image'] = body.image;
-  }
-
-  const user = new User(query);
-  user.save((err, user) => {
-    if (err) {
-      return res.status(500).json({
-        ok: false,
-        err,
-      });
-    }
-    res.json({
-      success: true,
-    });
-  });
 });
