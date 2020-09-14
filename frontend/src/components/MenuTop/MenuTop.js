@@ -4,7 +4,6 @@ import { Menu, Button } from "antd";
 import { Link } from "react-router-dom";
 import { MenuOutlined } from "@ant-design/icons";
 import { Drawer, List } from "antd-mobile";
-import { item } from "../../helpers/item.menu";
 import MenuItem from "antd/lib/menu/MenuItem";
 import Logo from "../../assets/logo.png";
 export default function MenuTop(props) {
@@ -14,22 +13,36 @@ export default function MenuTop(props) {
   const onDock = () => {
     setDocker(!docker);
   };
-
-  const sidebar = (
-    <List>
-      {item.map((item) => {
-        return (
-          <List.Item key={item.key}>
-            <Link to={item.to}>{item.name}</Link>
-          </List.Item>
-        );
-      })}
-    </List>
-  );
-
   const handleLogout = () => {
     logout();
   };
+  const sidebar = (
+    <List>
+      <List.Item key={1}>
+        <Link to={"/"}>Home</Link>
+      </List.Item>
+      <List.Item key={2}>
+        <Link to={"/about"}>About</Link>
+      </List.Item>
+      {userAuth && (
+        <List.Item key={3}>
+          <Link onClick={handleLogout} to="/">
+            Logout
+          </Link>
+        </List.Item>
+      )}
+      {!userAuth && (
+        <List.Item key={4}>
+          <Link to={"/login"}>Login</Link>
+        </List.Item>
+      )}
+      {userAuth && (
+        <List.Item key={5}>
+          <Link to={"/upload"}>Upload</Link>
+        </List.Item>
+      )}
+    </List>
+  );
 
   return (
     <div className="menu-top">
@@ -85,7 +98,7 @@ export default function MenuTop(props) {
           )}
           {userAuth && (
             <MenuItem>
-              <Link onClick={handleLogout} to="#">
+              <Link onClick={handleLogout} to="/">
                 Logout
               </Link>
             </MenuItem>

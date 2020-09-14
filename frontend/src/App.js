@@ -25,7 +25,7 @@ export default function App() {
   const { Header, Content, Footer } = Layout;
   const [isMobile, setStateIsMobile] = useState(false);
   const [userAuth, setUserAuth] = useState(false);
-  const [setUser] = useState(null);
+  const [user, setUser] = useState(null);
   const [error, setError] = useState(null);
   useEffect(() => {
     if (getToken()) {

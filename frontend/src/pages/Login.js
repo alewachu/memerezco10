@@ -79,9 +79,7 @@ export default function Login({ login, history }) {
                       <Col span={12}>
                         <Form.Item>
                           <Button type="ghost">
-                            <Link to="/register">
-                              I already have an account
-                            </Link>{" "}
+                            <Link to="/register">Sign Up</Link>
                           </Button>
                         </Form.Item>
                       </Col>
